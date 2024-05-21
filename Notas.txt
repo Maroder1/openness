@@ -1,0 +1,3 @@
+pip uninstall clr
+pip uninstall pythonnet
+pip install pythonnet

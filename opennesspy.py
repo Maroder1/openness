@@ -1,11 +1,14 @@
-
 import clr
-clr.AddReference('C:\\Program Files\\Siemens\\Automation\\Portal V15_1\PublicAPI\\V15.1\\Siemens.Engineering.dll')
 from System.IO import DirectoryInfo
+
+import os
+
+clr.AddReference(r'C:\Program Files\Siemens\Automation\Portal V15_1\PublicAPI\V15.1\Siemens.Engineering.dll')
 import Siemens.Engineering as tia
 
+project_dir = 'C:\\Users\\Willian\\Desktop\\tia_python'
+project_path = DirectoryInfo (project_dir)
 
-project_path = DirectoryInfo ('C:\\Jonas\\TIA')
 project_name = 'PythonTest'
 
 #Starting TIA
