@@ -18,10 +18,13 @@ project_name_var=tk.StringVar()
 
 # Função para fechar a janela
 def Criar():
-    print("Caminho do arquivo: ", project_dir)
     project_name = project_name_var.get()
-    print("Nome do projeto: ", project_name)
-    Openness.create_project(project_dir, project_name)
+    
+    NomePlc = []
+    for linha in InfoHardware:
+        NomePlc.append(linha["entry"].get())
+                                
+    Openness.create_project(project_dir, project_name,NomePlc)
     root.destroy()
 
 # Caixa de dialogo
@@ -30,22 +33,36 @@ def open_file_dialog():
     project_dir = filedialog.askdirectory()
     
 def adicionar_linha():
-    nova_linha = {"combobox": tk.StringVar(root), "entry": tk.StringVar(root)}
-    nova_linha_frame = ttk.Frame(root)
+    tupla_Input = {"combobox": tk.StringVar(root), "entry": tk.StringVar(root)}
+    
+    global NHardware
     
     # Combobox na primeira coluna
-    combobox = ttk.Combobox(nova_linha_frame, textvariable=nova_linha["combobox"], values=opcoes_Hardware)
-    combobox.pack(side=tk.LEFT, padx=5)
+    combobox = ttk.Combobox(hardwareConfig, textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
+    combobox.grid(row=NHardware, column=0, padx=5)
     
     # Entry na segunda coluna
-    entry = ttk.Entry(nova_linha_frame, textvariable=nova_linha["entry"])
-    entry.pack(side=tk.LEFT, padx=5)
+    entry = ttk.Entry(hardwareConfig, textvariable=tupla_Input["entry"])
+    entry.grid(row=NHardware, column=1, padx=5)
     
-    nova_linha_frame.pack(padx=5, pady=5)
+    NHardware += 1
+    
+    # Use the values from the tuple in another context
+    combobox_value = tupla_Input["combobox"].get()
+    entry_value = tupla_Input["entry"].get()
+    
+    # Do something with the values
+    print("Combobox value:", combobox_value)
+    print("Entry value:", entry_value)
+    
+    InfoHardware.append(tupla_Input)
+
         
 ############### Valoriaveis ################
 
 project_dir = None
+NHardware = 0
+InfoHardware = []
 opcoes_Hardware = ["PLC", "HMI"]
 
 ############### CAMPOS ################
@@ -59,7 +76,7 @@ entrada1 = tk.Entry(config_frame, textvariable = project_name_var)
 entrada1.grid(row=0, column=1, padx=5, pady=5)
 
 # Endereço projeto
-btn_open_dialog = tk.Button(config_frame, text="Selecionar diretóroi", command=open_file_dialog)
+btn_open_dialog = tk.Button(config_frame, text="Selecionar diretório", command=open_file_dialog)
 btn_open_dialog.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
 # Botão para criar
@@ -72,5 +89,7 @@ config_frame.pack()
 botao_adicionar_linha = tk.Button(root, text="Adicionar hardware", command=adicionar_linha)
 botao_adicionar_linha.pack(pady=10)
 
-# Executando o loop principal
+hardwareConfig = ttk.Frame(root)
+hardwareConfig.pack(padx=5, pady=5)
+
 root.mainloop()
