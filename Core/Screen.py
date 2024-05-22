@@ -9,7 +9,7 @@ import Openness
 # Criando a janela principal
 root = tk.Tk()
 root.geometry("600x400")
-root.title("MVP Tia Openness")
+root.title("RPA Tia Openness")
 
 # Variavel no nome do projeto
 project_name_var=tk.StringVar()
@@ -41,37 +41,36 @@ def adicionar_linha():
     entry = ttk.Entry(nova_linha_frame, textvariable=nova_linha["entry"])
     entry.pack(side=tk.LEFT, padx=5)
     
-    # index_botao = botao_adicionar_linha.grid_info()
-    print(botao_adicionar_linha.grid_info())
-    nova_linha_frame.pack()
-    
-    linhas.append(nova_linha)
+    nova_linha_frame.pack(padx=5, pady=5)
         
 ############### Valoriaveis ################
 
 project_dir = None
-linhas = []
 opcoes_Hardware = ["PLC", "HMI"]
 
 ############### CAMPOS ################
+config_frame = ttk.Frame(root)
 
 # Nome do projeto
-label = tk.Label(root, text="Nome do projeto: ")
-label.pack(pady=20)  # pady é a margem vertical
-entrada1 = tk.Entry(root, textvariable = project_name_var)
-entrada1.pack()  # Adicione esta linha para exibir o campo de entrada
+label = tk.Label(config_frame, text="Nome do projeto: ")
+label.grid(row=0, column=0, padx=5, pady=5)
+
+entrada1 = tk.Entry(config_frame, textvariable = project_name_var)
+entrada1.grid(row=0, column=1, padx=5, pady=5)
 
 # Endereço projeto
-btn_open_dialog = tk.Button(root, text="Selecionar diretóroi", command=open_file_dialog)
-btn_open_dialog.pack(pady=10)
-
-# Botão para adicionar uma nova linha
-botao_adicionar_linha = tk.Button(root, text="Adicionar Linha", command=adicionar_linha)
-botao_adicionar_linha.pack(pady=10)
+btn_open_dialog = tk.Button(config_frame, text="Selecionar diretóroi", command=open_file_dialog)
+btn_open_dialog.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
 # Botão para criar
-criarBtn = tk.Button(root, text="Crair projeto", command=Criar)
-criarBtn.pack()
+criarBtn = tk.Button(config_frame, text="Crair projeto", command=Criar)
+criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+
+config_frame.pack()
+
+# Botão para adicionar uma nova linha
+botao_adicionar_linha = tk.Button(root, text="Adicionar hardware", command=adicionar_linha)
+botao_adicionar_linha.pack(pady=10)
 
 # Executando o loop principal
 root.mainloop()
