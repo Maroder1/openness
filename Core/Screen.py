@@ -20,11 +20,11 @@ project_name_var=tk.StringVar()
 def Criar():
     project_name = project_name_var.get()
     
-    NomePlc = []
+    devices = []
     for linha in InfoHardware:
-        NomePlc.append(linha["entry"].get())
+        devices.append({"HardwareType": linha["combobox"].get(), "Name": linha["entry"].get()})
                                 
-    Openness.create_project(project_dir, project_name,NomePlc)
+    Openness.create_project(project_dir, project_name,devices)
     root.destroy()
 
 # Caixa de dialogo
@@ -46,14 +46,6 @@ def adicionar_linha():
     entry.grid(row=NHardware, column=1, padx=5)
     
     NHardware += 1
-    
-    # Use the values from the tuple in another context
-    combobox_value = tupla_Input["combobox"].get()
-    entry_value = tupla_Input["entry"].get()
-    
-    # Do something with the values
-    print("Combobox value:", combobox_value)
-    print("Entry value:", entry_value)
     
     InfoHardware.append(tupla_Input)
 
