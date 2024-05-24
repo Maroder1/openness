@@ -1,6 +1,7 @@
 import sys
 sys.coinit_flags = 2
 import pywinauto
+import threading
 import tkinter as tk
 from tkinter import filedialog, ttk 
 
@@ -23,9 +24,10 @@ def Criar():
     devices = []
     for linha in InfoHardware:
         devices.append({"HardwareType": linha["combobox"].get(), "Name": linha["entry"].get()})
-                                
-    Openness.create_project(project_dir, project_name,devices)
-    root.destroy()
+    update_status("Creating project...")
+    threading.Thread(target=Openness.create_project(project_dir, project_name, devices)).start()
+    update_status(None)
+    # root.destroy()
 
 # Caixa de dialogo
 def open_file_dialog():
@@ -38,50 +40,80 @@ def adicionar_linha():
     global NHardware
     
     # Combobox na primeira coluna
-    combobox = ttk.Combobox(hardwareConfig, textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
+    combobox = ttk.Combobox(screen_frames[2], textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
     combobox.grid(row=NHardware, column=0, padx=5)
     
     # Entry na segunda coluna
-    entry = ttk.Entry(hardwareConfig, textvariable=tupla_Input["entry"])
+    entry = ttk.Entry(screen_frames[2], textvariable=tupla_Input["entry"])
     entry.grid(row=NHardware, column=1, padx=5)
     
     NHardware += 1
     
     InfoHardware.append(tupla_Input)
 
+def update_status(status):
+    global screen_instance
+    if screen_instance:
+        global RAP_status_Tela
+        if not status:
+            if RAP_status_Tela != Openness.RPA_status:
+                RAP_status_Tela = Openness.RPA_status
+        else:
+            RAP_status_Tela = status
         
 ############### Valoriaveis ################
 
 project_dir = None
 NHardware = 0
 InfoHardware = []
-opcoes_Hardware = ["PLC", "HMI"]
+RAP_status_Tela = "Idle"
+screen_instance = False
+screen_frames = []
+opcoes_Hardware = ["PLC", "HMI", "IO Node"]
 
-############### CAMPOS ################
-config_frame = ttk.Frame(root)
+############### TELA ################
+def main_screen():
+    global screen_frames
+    
+    global screen_instance
+    if not screen_instance:
+        screen_instance = True
+        update_status("Idle")
+        
+        config_frame = ttk.Frame(root)
+        screen_frames.append(config_frame)
+        
+        # Nome do projeto
+        label = tk.Label(config_frame, text="Nome do projeto: ")
+        label.grid(row=0, column=0, padx=5, pady=5)
 
-# Nome do projeto
-label = tk.Label(config_frame, text="Nome do projeto: ")
-label.grid(row=0, column=0, padx=5, pady=5)
+        entrada1 = tk.Entry(config_frame, textvariable = project_name_var)
+        entrada1.grid(row=0, column=1, padx=5, pady=5)
 
-entrada1 = tk.Entry(config_frame, textvariable = project_name_var)
-entrada1.grid(row=0, column=1, padx=5, pady=5)
+        # Endereço projeto
+        btn_open_dialog = tk.Button(config_frame, text="Selecionar diretório", command=open_file_dialog)
+        btn_open_dialog.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
-# Endereço projeto
-btn_open_dialog = tk.Button(config_frame, text="Selecionar diretório", command=open_file_dialog)
-btn_open_dialog.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
+        # Botão para criar
+        criarBtn = tk.Button(config_frame, text="Crair projeto", command=Criar)
+        criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
-# Botão para criar
-criarBtn = tk.Button(config_frame, text="Crair projeto", command=Criar)
-criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+        config_frame.pack()
 
-config_frame.pack()
+        # Botão para adicionar uma nova linha
+        botao_adicionar_linha = tk.Button(root, text="Adicionar hardware", command=adicionar_linha)
+        botao_adicionar_linha.pack(pady=10)
+        screen_frames.append(botao_adicionar_linha)
 
-# Botão para adicionar uma nova linha
-botao_adicionar_linha = tk.Button(root, text="Adicionar hardware", command=adicionar_linha)
-botao_adicionar_linha.pack(pady=10)
+        hardwareConfig = ttk.Frame(root)
+        hardwareConfig.pack(padx=5, pady=5)
+        screen_frames.append(hardwareConfig)
+        
+        global RAP_status_Tela
+        label_status = tk.Label(root, text="Nome do projeto: " + RAP_status_Tela)
+        label_status.pack(padx=5, pady=5)
 
-hardwareConfig = ttk.Frame(root)
-hardwareConfig.pack(padx=5, pady=5)
-
-root.mainloop()
+        root.mainloop()
+        
+############### RENDER ################
+main_screen()
