@@ -1,7 +1,6 @@
 import sys
 sys.coinit_flags = 2
 import pywinauto
-import threading
 import tkinter as tk
 from tkinter import filedialog, ttk 
 
@@ -25,7 +24,7 @@ def Criar():
     for linha in InfoHardware:
         devices.append({"HardwareType": linha["combobox"].get(), "Name": linha["entry"].get()})
     update_status("Creating project...")
-    threading.Thread(target=Openness.create_project(project_dir, project_name, devices)).start()
+    Openness.create_project(project_dir, project_name, devices)
     update_status(None)
     # root.destroy()
 

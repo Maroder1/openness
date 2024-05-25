@@ -1,4 +1,0 @@
-pip uninstall clr
-pip uninstall pythonnet
-pip install pythonnet
-python .\setup.py build

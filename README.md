@@ -28,5 +28,9 @@ More details can be found in the Tia Openness [documentation](https://support.in
 ## Option 1, running directly (not recommended)
 
  1. in the windows search bar type "command prompt" to open Command Promt (CMD)
- 2. Install pythonnet by typing: *pip install pythonnet*
- 3. Browse to the location of the **Screen.py** file and run it
+ 2. Browse to the location of the **build.py** file and run it with the following command
+
+
+```
+ python build.py
+```

@@ -7,11 +7,10 @@ build_exe_options = {"packages": ["pywinauto", "tkinter", "Openness"], "include_
 base = None
 if(sys.platform == "win32"):
     base = "Win32GUI"
-    
-setup(
-    name="RPA Tia Openness",
-    version="0.1",
-    description="My GUI application!",
-    options={"build_exe": build_exe_options},
-    executables=[Executable("Screen.py", base=base)]
-)
+    setup(
+        name="RPA Tia Openness",
+        version="0.1",
+        description="Interface for automated creation of TIA Portal projects using Openness API",
+        options={"build_exe": build_exe_options},
+        executables=[Executable("Screen.py", base=base, target_name="RPA_Tia_Openness")]
+    )

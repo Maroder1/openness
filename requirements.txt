@@ -1,0 +1,4 @@
+pythonnet
+pywinauto
+cx-Freeze
+
