@@ -34,3 +34,4 @@ More details can be found in the Tia Openness [documentation](https://support.in
 ```
  python build.py
 ```
+Your program will be in core/build/exe.win-amd64-3.12
