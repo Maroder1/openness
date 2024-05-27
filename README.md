@@ -24,9 +24,10 @@ More details can be found in the Tia Openness [documentation](https://support.in
  1. [Download the Python installation wizard](https://www.python.org/downloads)
  2. Make sure Python is configured within the PATH 
 
+## Before build
+Before building, you must edit the "project_dll" variable, in Core/openness.py, so that it reflects the directory where the Siemens.Engineering.dll dll is saved on your machine
 
-## Option 1, running directly (not recommended)
-
+## How to build
  1. in the windows search bar type "command prompt" to open Command Promt (CMD)
  2. Browse to the location of the **build.py** file and run it with the following command
 

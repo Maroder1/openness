@@ -1,8 +1,9 @@
 import subprocess
 import os
 
-script_path = os.path.abspath(__file__)
-script_dir = os.path.dirname(script_path)
+current_path = os.path.abspath(__file__)
+requiriments_path = os.path.join(os.path.dirname(current_path), "Core", "requirements")
+script_dir = os.path.dirname(current_path)
 
 def install_dependencies():
     uninstall_dependencies()
