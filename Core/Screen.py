@@ -1,6 +1,7 @@
 import sys
 sys.coinit_flags = 2
 import pywinauto
+import UserConfig
 import tkinter as tk
 from tkinter import filedialog, ttk 
 
@@ -87,7 +88,7 @@ def main_screen():
         screen_frames.append(user_config)
         
         # Botão Configurações
-        botao_config = tk.Button(user_config, text="...", command=setUserConfig)
+        botao_config = tk.Button(user_config, text="...", command=user_config_screen)
         botao_config.grid(row=0, column=0, padx=5, pady=5)
         screen_frames.append(botao_config)
         
@@ -127,6 +128,16 @@ def main_screen():
         label_status.pack(padx=5, pady=5)
 
         root.mainloop()
+        
+def user_config_screen():
+    nova_janela = tk.Toplevel(root)
+    nova_janela.title("Nova Janela")
+    nova_janela.geometry("200x100")
+    nova_label = tk.Label(nova_janela, text="Esta é a nova janela!")
+    nova_label.pack()
+    # Define um botão para fechar a nova janela
+    fechar_botao = tk.Button(nova_janela, text="Fechar", command=nova_janela.destroy)
+    fechar_botao.pack()
         
 ############### RENDER ################
 main_screen()
