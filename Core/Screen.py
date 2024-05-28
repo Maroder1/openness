@@ -24,7 +24,8 @@ def Criar():
     
     devices = []
     for linha in InfoHardware:
-        devices.append({"HardwareType": linha["combobox"].get(), "Name": linha["entry"].get()})
+        devices.append({"HardwareType": linha["combobox"].get(), "Mlfb":linha["mlfb"].get(), "Name": linha["entry"].get()})
+        print(devices)
     update_status("Creating project...")
     Openness.create_project(project_dir, project_name, devices)
     update_status(None)
@@ -46,7 +47,7 @@ def adicionar_linha():
     combobox.grid(row=NHardware, column=0, padx=5)
     
     # MLFB - Combobox 2º coluna       
-    mlfb_combobox = ttk.Combobox(screen_frames[4])
+    mlfb_combobox = ttk.Combobox(screen_frames[4], textvariable=tupla_Input["mlfb"])
     mlfb_combobox.grid(row=NHardware, column=1, padx=5)
     
     def update_mlfb_combobox(event):
@@ -87,6 +88,12 @@ def update_status(status):
             
 def setUserConfig():
     print("User config")
+    
+def slice_tupla(string):
+    if len(string) >= 2:
+        return string[2:-3]
+    else:
+        return string
         
 ############### Valoriaveis ################
 
@@ -116,7 +123,7 @@ def main_screen():
         i=0
         for type in opcoes_Hardware:
             for ii in MlfbManagement.getMlfbByHwType(type):
-                mlfb_List[i].append(ii)
+                mlfb_List[i].append(slice_tupla(str(ii)))
             i += 1
         
         #Frame for user configuration 

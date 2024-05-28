@@ -35,13 +35,15 @@ def create_project(project_path, project_name, hardware):
         myproject = mytia.Projects.Create(project_path, project_name)
 
         deviceName = ''
+        deviceMlfb = ''
         for device in hardware:
             deviceName = device["Name"]
+            deviceMlfb = device["Mlfb"]
 
             if device["HardwareType"] == "PLC":
                 RPA_status = 'Creating CPU: ', deviceName
                 print(RPA_status)
-                config_Plc = 'OrderNumber:6ES7 518-4AP00-0AB0/V2.6'
+                config_Plc = "OrderNumber:"+deviceMlfb+"/V1.6"
                 myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
                 
             elif device["HardwareType"] == "HMI":
