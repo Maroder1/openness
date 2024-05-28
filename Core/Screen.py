@@ -25,7 +25,7 @@ def Criar():
     devices = []
     for linha in InfoHardware:
         devices.append({"HardwareType": linha["combobox"].get(), "Mlfb":linha["mlfb"].get(), "Name": linha["entry"].get()})
-        print(devices)
+        
     update_status("Creating project...")
     Openness.create_project(project_dir, project_name, devices)
     update_status(None)
@@ -86,8 +86,10 @@ def update_status(status):
         else:
             RAP_status_Tela = status
             
-def setUserConfig():
-    print("User config")
+def setDllPath(dll_matrix):
+    for dll in dll_matrix:
+        print(dll)
+        # UserConfig.saveDll(dll[0], dll[1])
     
 def slice_tupla(string):
     if len(string) >= 2:
@@ -180,27 +182,46 @@ def user_config_screen():
     nova_label = tk.Label(usr_config_screen, text="Aqui você pode configurar suas preferências")
     nova_label.pack()
     
-    user_config_frame = ttk.Frame(usr_config_screen)
+    dll_config_frame = ttk.Frame(usr_config_screen)
+
+    dll_matrix = []
     
     # Tia V15.1
-    label = tk.Label(user_config_frame, text="Tia V15.1:")
-    label.grid(row=0, column=0, padx=5, pady=5)
-    input = tk.Entry(user_config_frame)
-    input.grid(row=0, column=1, padx=5, pady=5)
+    label151 = tk.Label(dll_config_frame, text="Tia V15.1:")
+    label151.grid(row=0, column=0, padx=5, pady=5)
+    
+    input151 = tk.Entry(dll_config_frame)
+    input151.grid(row=0, column=1, padx=5, pady=5)
+    
+    info_dll151 = {"Tia_Version": 151, "Path": input151.get()}
+    dll_matrix.append(info_dll151)
+    
     
     # Tia V16
-    label = tk.Label(user_config_frame, text="Tia V16:")
-    label.grid(row=1, column=0, padx=5, pady=5)
-    input = tk.Entry(user_config_frame)
-    input.grid(row=1, column=1, padx=5, pady=5)
+    label16 = tk.Label(dll_config_frame, text="Tia V16:")
+    label16.grid(row=1, column=0, padx=5, pady=5)
+    
+    input16 = tk.Entry(dll_config_frame)
+    input16.grid(row=1, column=1, padx=5, pady=5)
+
+    info_dll16 = {"Tia_Version": 16, "Path": input16.get()}
+    dll_matrix.append(info_dll16)
     
     # Tia V17
-    label = tk.Label(user_config_frame, text="Tia V17:")
-    label.grid(row=2, column=0, padx=5, pady=5)
-    input = tk.Entry(user_config_frame)
-    input.grid(row=2, column=1, padx=5, pady=5)
+    label17 = tk.Label(dll_config_frame, text="Tia V17:")
+    label17.grid(row=2, column=0, padx=5, pady=5)
     
-    user_config_frame.pack(padx=5, pady=5)
+    input17 = tk.Entry(dll_config_frame)
+    input17.grid(row=2, column=1, padx=5, pady=5)
+
+    info_dll17 = {"Tia_Version": 151, "Path": input17.get()}
+    dll_matrix.append(info_dll17)
+    
+    salvar = tk.Button(dll_config_frame, text="Salvar", command=lambda: setDllPath(dll_matrix))
+    salvar.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+    
+    dll_config_frame.pack(padx=5, pady=5)
+    
     
     # Define um botão para fechar a nova janela
     fechar_botao = tk.Button(usr_config_screen, text="Fechar", command=usr_config_screen.destroy)
