@@ -30,6 +30,9 @@ def build():
         with open(ddl_path, 'r') as arquivo_sql:
             script = arquivo_sql.read()
             cursor.executescript(script)
+            
+        conexao.commit()
+        conexao.close()
     
     global core_path
     os.chdir(core_path)
