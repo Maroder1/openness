@@ -41,38 +41,39 @@ def adicionar_linha():
     
     global NHardware
     
-    # Combobox na primeira coluna
+    # Combobox 1º coluna
     combobox = ttk.Combobox(screen_frames[4], textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
     combobox.grid(row=NHardware, column=0, padx=5)
     
-    def update_mlfb_combobox():
-        print("selected")
-        # valueSource = None
-        # selected_option = combobox.get()
-        
-        # if selected_option == "PLC":
-        #     valueSource = mlfb_List[0]
-        # elif selected_option == "HMI":
-        #     valueSource = mlfb_List[1]
-        # elif selected_option == "IO Node":
-        #     valueSource = mlfb_List[2]
-            
-        # mlfb_combobox['values'] = valueSource
-        
-    # MLFB        
+    # MLFB - Combobox 2º coluna       
     mlfb_combobox = ttk.Combobox(screen_frames[4])
-    mlfb_combobox.bind('<<ComboboxSelected>>', update_mlfb_combobox)
-    
     mlfb_combobox.grid(row=NHardware, column=1, padx=5)
-
     
-    # Entry na segunda coluna
+    def update_mlfb_combobox(event):
+        selected_option = tupla_Input["combobox"].get()
+
+        if selected_option == "PLC":
+            valueSource = mlfb_List[0]
+        elif selected_option == "HMI":
+            valueSource = mlfb_List[1]
+        elif selected_option == "IO Node":
+            valueSource = mlfb_List[2]
+        else:
+            valueSource = []
+
+        mlfb_combobox['values'] = valueSource
+    
+    # Vincule a função de atualização da combobox à combobox principal
+    tupla_Input["combobox"].trace_add('write', lambda *args: update_mlfb_combobox(None))
+    
+    # Entry 2º coluna
     entry = ttk.Entry(screen_frames[4], textvariable=tupla_Input["entry"])
     entry.grid(row=NHardware, column=2, padx=5)
     
     NHardware += 1
     
     InfoHardware.append(tupla_Input)
+
 
 def update_status(status):
     global screen_instance
