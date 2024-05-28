@@ -5,9 +5,13 @@ import os
 
 current_path = os.path.abspath(__file__)
 core_path = os.path.join(os.path.dirname(current_path), "Core")
-requirements_path = os.path.join(os.path.dirname(core_path), "Core", "requirements")
-ddl_path = os.path.join(os.path.dirname(core_path), "Core", "Database", "ddl.sql")
-plc_List_path = os.path.join(os.path.dirname(core_path), "Core", "Database", "mlfb", "PLC_List.csv")
+
+db_path = os.path.join(core_path, "Openness.db")
+requirements_path = os.path.join(core_path, "requirements")
+ddl_path = os.path.join(core_path, "Database", "ddl.sql")
+plc_List_path = os.path.join(core_path, "Database", "mlfb", "PLC_List.csv")
+
+print(plc_List_path)
 
 def install_dependencies():
     uninstall_dependencies()
@@ -28,8 +32,10 @@ def build():
     subprocess.call(["python", setup_file, "build"])
 
 def create_db():
-     if not os.path.exists('Openness.db'):
-        conexao = sqlite3.connect('Openness.db')
+    print(db_path)
+    
+    if not os.path.exists(db_path):
+        conexao = sqlite3.connect(db_path)
         cursor = conexao.cursor()
         
         global ddl_path
@@ -45,8 +51,8 @@ def create_db():
             leitor_csv = csv.reader(arquivo)
             for linha in leitor_csv:
                 print("Gravando: ", linha)
-                mlfb, descricao = linha
-                cursor.execute("INSERT INTO CPU_List (mlfb, description) VALUES (?, ?)", (mlfb, descricao))
+                mlfb, type, descricao = linha
+                cursor.execute("INSERT INTO CPU_List (mlfb, type, description) VALUES (?, ?, ?)", (mlfb, type, descricao))
         conexao.commit()
         conexao.close()
         

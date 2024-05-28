@@ -2,6 +2,7 @@ import sys
 sys.coinit_flags = 2
 import pywinauto
 import UserConfig
+import MlfbManagement
 import tkinter as tk
 from tkinter import filedialog, ttk 
 
@@ -28,24 +29,46 @@ def Criar():
     Openness.create_project(project_dir, project_name, devices)
     update_status(None)
     # root.destroy()
-
+    
 # Caixa de dialogo
 def open_file_dialog():
     global project_dir
     project_dir = filedialog.askdirectory()
     
 def adicionar_linha():
-    tupla_Input = {"combobox": tk.StringVar(root), "entry": tk.StringVar(root)}
+    
+    tupla_Input = {"combobox": tk.StringVar(root), "mlfb": tk.StringVar(root), "entry": tk.StringVar(root)}
     
     global NHardware
     
     # Combobox na primeira coluna
-    combobox = ttk.Combobox(screen_frames[3], textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
+    combobox = ttk.Combobox(screen_frames[4], textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
     combobox.grid(row=NHardware, column=0, padx=5)
     
+    def update_mlfb_combobox():
+        print("selected")
+        # valueSource = None
+        # selected_option = combobox.get()
+        
+        # if selected_option == "PLC":
+        #     valueSource = mlfb_List[0]
+        # elif selected_option == "HMI":
+        #     valueSource = mlfb_List[1]
+        # elif selected_option == "IO Node":
+        #     valueSource = mlfb_List[2]
+            
+        # mlfb_combobox['values'] = valueSource
+        
+    # MLFB        
+    mlfb_combobox = ttk.Combobox(screen_frames[4])
+    mlfb_combobox.bind('<<ComboboxSelected>>', update_mlfb_combobox)
+    
+    mlfb_combobox.grid(row=NHardware, column=1, padx=5)
+
+    
     # Entry na segunda coluna
-    entry = ttk.Entry(screen_frames[3], textvariable=tupla_Input["entry"])
-    entry.grid(row=NHardware, column=1, padx=5)
+    entry = ttk.Entry(screen_frames[4], textvariable=tupla_Input["entry"])
+    entry.grid(row=NHardware, column=2, padx=5)
     
     NHardware += 1
     
@@ -74,6 +97,12 @@ screen_instance = False
 screen_frames = []
 opcoes_Hardware = ["PLC", "HMI", "IO Node"]
 
+mlfb_Plc = []
+mlfb_ihm = []
+mlfb_npde = []
+
+mlfb_List=[mlfb_Plc, mlfb_ihm, mlfb_npde]
+
 ############### TELA ################
 def main_screen():
     global screen_frames
@@ -82,7 +111,13 @@ def main_screen():
     if not screen_instance:
         screen_instance = True
         update_status("Idle")
-    
+        
+        i=0
+        for type in opcoes_Hardware:
+            for ii in MlfbManagement.getMlfbByHwType(type):
+                mlfb_List[i].append(ii)
+            i += 1
+        
         #Frame for user configuration 
         user_config = ttk.Frame(root)
         screen_frames.append(user_config)

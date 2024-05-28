@@ -7,8 +7,6 @@ conn_path = os.path.join(current_path, "Openness.db")
 conn = sqlite3.connect(conn_path)
 cursor = conn.cursor()
 
-
-def saveDll(self, Tia_Version, dll_Path):
-    cursor.execute("INSERT INTO Dll_Path (Tia_Version, Path) VALUES (?, ?)", (Tia_Version, dll_Path))
-    conn.commit()
-    conn.close()
+def getMlfbByHwType(hw_type):
+    cursor.execute('SELECT mlfb FROM CPU_List WHERE type = ?', (hw_type,))
+    return cursor.fetchall()

@@ -7,5 +7,6 @@ CREATE TABLE
 CREATE TABLE
     CPU_List (
         mlfb VARCHAR(50) PRIMARY KEY,
+        type VARCHAR(50),
         description VARCHAR(500)
     );
