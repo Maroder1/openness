@@ -1,13 +1,17 @@
 import sqlite3
 import os
+class UserConfig:
+    
+    conn_path = ""
+    
+    def __init__(self, conn_path):
+        self.conn_path = conn_path
+    
 
-current_path = os.path.abspath(__file__)
-conn_path = os.path.join(os.path.dirname(current_path), "Database", "Openness.db")
+    conn = sqlite3.connect(conn_path)
+    cursor = conn.cursor()
 
-conn = sqlite3.connect(conn_path)
-cursor = conn.cursor()
-
-def saveDll(self, Tia_Version, dll_Path):
-    cursor.execute("INSERT INTO Dll_Path (Tia_Version, Path) VALUES (?, ?)", (Tia_Version, dll_Path))
-    conn.commit()
-    conn.close()
+    def saveDll(self, Tia_Version, dll_Path):
+        self.cursor.execute("INSERT INTO Dll_Path (Tia_Version, Path) VALUES (?, ?)", (Tia_Version, dll_Path))
+        self.conn.commit()
+        self.conn.close()

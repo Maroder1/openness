@@ -1,11 +1,11 @@
 import subprocess
+import sqlite3
 import os
 
 current_path = os.path.abspath(__file__)
 core_path = os.path.join(os.path.dirname(current_path), "Core")
 requirements_path = os.path.join(os.path.dirname(core_path), "Core", "requirements")
-
-print(requirements_path)
+ddl_path = os.path.join(os.path.dirname(core_path), "Core", "Database", "ddl.sql")
 
 def install_dependencies():
     uninstall_dependencies()
@@ -19,6 +19,18 @@ def uninstall_dependencies():
     subprocess.call(["pip", "uninstall", "-r", requirements_file])
 
 def build():
+    
+    if not os.path.exists('Openness.db'):
+        conexao = sqlite3.connect('Openness.db')
+        cursor = conexao.cursor()
+        
+        global ddl_path
+        print(ddl_path)
+        
+        with open(ddl_path, 'r') as arquivo_sql:
+            script = arquivo_sql.read()
+            cursor.executescript(script)
+    
     global core_path
     os.chdir(core_path)
     setup_file = os.path.join(core_path, "setup.py")
