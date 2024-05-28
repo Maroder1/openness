@@ -173,13 +173,37 @@ def main_screen():
         root.mainloop()
         
 def user_config_screen():
-    nova_janela = tk.Toplevel(root)
-    nova_janela.title("Nova Janela")
-    nova_janela.geometry("200x100")
-    nova_label = tk.Label(nova_janela, text="Esta é a nova janela!")
+    usr_config_screen = tk.Toplevel(root)
+    usr_config_screen.title("Configurações do usuário")
+    usr_config_screen.geometry("540x360")
+    
+    nova_label = tk.Label(usr_config_screen, text="Aqui você pode configurar suas preferências")
     nova_label.pack()
+    
+    user_config_frame = ttk.Frame(usr_config_screen)
+    
+    # Tia V15.1
+    label = tk.Label(user_config_frame, text="Tia V15.1:")
+    label.grid(row=0, column=0, padx=5, pady=5)
+    input = tk.Entry(user_config_frame)
+    input.grid(row=0, column=1, padx=5, pady=5)
+    
+    # Tia V16
+    label = tk.Label(user_config_frame, text="Tia V16:")
+    label.grid(row=1, column=0, padx=5, pady=5)
+    input = tk.Entry(user_config_frame)
+    input.grid(row=1, column=1, padx=5, pady=5)
+    
+    # Tia V17
+    label = tk.Label(user_config_frame, text="Tia V17:")
+    label.grid(row=2, column=0, padx=5, pady=5)
+    input = tk.Entry(user_config_frame)
+    input.grid(row=2, column=1, padx=5, pady=5)
+    
+    user_config_frame.pack(padx=5, pady=5)
+    
     # Define um botão para fechar a nova janela
-    fechar_botao = tk.Button(nova_janela, text="Fechar", command=nova_janela.destroy)
+    fechar_botao = tk.Button(usr_config_screen, text="Fechar", command=usr_config_screen.destroy)
     fechar_botao.pack()
         
 ############### RENDER ################
