@@ -39,11 +39,11 @@ def adicionar_linha():
     global NHardware
     
     # Combobox na primeira coluna
-    combobox = ttk.Combobox(screen_frames[2], textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
+    combobox = ttk.Combobox(screen_frames[3], textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
     combobox.grid(row=NHardware, column=0, padx=5)
     
     # Entry na segunda coluna
-    entry = ttk.Entry(screen_frames[2], textvariable=tupla_Input["entry"])
+    entry = ttk.Entry(screen_frames[3], textvariable=tupla_Input["entry"])
     entry.grid(row=NHardware, column=1, padx=5)
     
     NHardware += 1
@@ -59,6 +59,9 @@ def update_status(status):
                 RAP_status_Tela = Openness.RPA_status
         else:
             RAP_status_Tela = status
+            
+def setUserConfig():
+    print("User config")
         
 ############### Valoriaveis ################
 
@@ -78,26 +81,37 @@ def main_screen():
     if not screen_instance:
         screen_instance = True
         update_status("Idle")
+    
+        #Frame for user configuration 
+        user_config = ttk.Frame(root)
+        screen_frames.append(user_config)
         
-        config_frame = ttk.Frame(root)
-        screen_frames.append(config_frame)
+        # Botão Configurações
+        botao_config = tk.Button(user_config, text="...", command=setUserConfig)
+        botao_config.grid(row=0, column=0, padx=5, pady=5)
+        screen_frames.append(botao_config)
+        
+        user_config.pack(padx=5, pady=5)
+        
+        proj_config_frame = ttk.Frame(root)
+        screen_frames.append(proj_config_frame)
         
         # Nome do projeto
-        label = tk.Label(config_frame, text="Nome do projeto: ")
+        label = tk.Label(proj_config_frame, text="Nome do projeto: ")
         label.grid(row=0, column=0, padx=5, pady=5)
 
-        entrada1 = tk.Entry(config_frame, textvariable = project_name_var)
+        entrada1 = tk.Entry(proj_config_frame, textvariable = project_name_var)
         entrada1.grid(row=0, column=1, padx=5, pady=5)
 
         # Endereço projeto
-        btn_open_dialog = tk.Button(config_frame, text="Selecionar diretório", command=open_file_dialog)
+        btn_open_dialog = tk.Button(proj_config_frame, text="Selecionar diretório", command=open_file_dialog)
         btn_open_dialog.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
         # Botão para criar
-        criarBtn = tk.Button(config_frame, text="Crair projeto", command=Criar)
+        criarBtn = tk.Button(proj_config_frame, text="Crair projeto", command=Criar)
         criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
-        config_frame.pack()
+        proj_config_frame.pack()
 
         # Botão para adicionar uma nova linha
         botao_adicionar_linha = tk.Button(root, text="Adicionar hardware", command=adicionar_linha)
