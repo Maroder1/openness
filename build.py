@@ -2,25 +2,26 @@ import subprocess
 import os
 
 current_path = os.path.abspath(__file__)
-requiriments_path = os.path.join(os.path.dirname(current_path), "Core", "requirements")
-script_dir = os.path.dirname(current_path)
+core_path = os.path.join(os.path.dirname(current_path), "Core")
+requirements_path = os.path.join(os.path.dirname(core_path), "Core", "requirements")
+
+print(requirements_path)
 
 def install_dependencies():
     uninstall_dependencies()
-    global script_dir
-    requirements_file = os.path.join(script_dir, "requirements.txt")
+    global requirements_path
+    requirements_file = os.path.join(requirements_path, "requirements.txt")
     subprocess.call(["pip", "install", "-r", requirements_file])
     
 def uninstall_dependencies():
-    global script_dir
-    requirements_file = os.path.join(script_dir, "uninstall.txt")
+    global requirements_path
+    requirements_file = os.path.join(requirements_path, "uninstall.txt")
     subprocess.call(["pip", "uninstall", "-r", requirements_file])
 
 def build():
-    global script_dir
-    setup_dir = os.path.join(script_dir, "Core")
-    os.chdir(setup_dir)  # change the current working directory
-    setup_file = os.path.join(setup_dir, "setup.py")
+    global core_path
+    os.chdir(core_path)
+    setup_file = os.path.join(core_path, "setup.py")
     subprocess.call(["python", setup_file, "build"])
 
 install_dependencies()
