@@ -20,7 +20,7 @@ project_name_var=tk.StringVar()
 ############### FUNÇÕES ################
 
 # Função para fechar a janela
-def Criar():
+def CreateProject():
     project_name = project_name_var.get()
     
     devices = []
@@ -32,14 +32,14 @@ def Criar():
     update_status(None)
     # root.destroy()
 
-def open_rectory_dialog():
+def open_directory_dialog():
     global project_dir
     project_dir = filedialog.askdirectory()
     
 def open_file_dialog():
     return filedialog.askopenfilename()
     
-def adicionar_linha():
+def AddHardware():
     
     tupla_Input = {"combobox": tk.StringVar(root), "mlfb": tk.StringVar(root), "entry": tk.StringVar(root)}
     
@@ -137,9 +137,9 @@ def main_screen():
         screen_frames.append(user_config)
         
         # Botão Configurações
-        botao_config = tk.Button(user_config, text="...", command=user_config_screen)
-        botao_config.pack(padx=5, pady=5, anchor='w')
-        screen_frames.append(botao_config)
+        BtnUserSettings = tk.Button(user_config, text="...", command=user_config_screen)
+        BtnUserSettings.pack(padx=5, pady=5, anchor='w')
+        screen_frames.append(BtnUserSettings)
         
         user_config.pack(padx=5, pady=5, anchor='w')
         
@@ -147,24 +147,24 @@ def main_screen():
         screen_frames.append(proj_config_frame)
         
         # Nome do projeto
-        label = tk.Label(proj_config_frame, text="Nome do projeto: ")
-        label.grid(row=0, column=0, padx=5, pady=5)
+        ProjectName = tk.Label(proj_config_frame, text="Nome do projeto: ")
+        ProjectName.grid(row=0, column=0, padx=5, pady=5)
 
         entrada1 = tk.Entry(proj_config_frame, textvariable = project_name_var)
         entrada1.grid(row=0, column=1, padx=5, pady=5)
 
         # Endereço projeto
-        btn_open_dialog = tk.Button(proj_config_frame, text="Selecionar diretório", command=open_rectory_dialog)
+        btn_open_dialog = tk.Button(proj_config_frame, text="Selecionar diretório", command=open_directory_dialog)
         btn_open_dialog.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
         # Botão para criar
-        criarBtn = tk.Button(proj_config_frame, text="Crair projeto", command=Criar)
+        criarBtn = tk.Button(proj_config_frame, text="Crair projeto", command=CreateProject)
         criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
         proj_config_frame.pack()
 
         # Botão para adicionar uma nova linha
-        botao_adicionar_linha = tk.Button(root, text="Adicionar hardware", command=adicionar_linha)
+        botao_adicionar_linha = tk.Button(root, text="Adicionar hardware", command=AddHardware)
         botao_adicionar_linha.pack(pady=10)
         screen_frames.append(botao_adicionar_linha)
 
@@ -220,8 +220,8 @@ def user_config_screen():
     Btn17 = tk.Button(dll_config_frame, command=lambda: setDllTuple(17))
     Btn17.grid(row=2, column=1, padx=5, pady=5,)
     
-    salvar = tk.Button(dll_config_frame, text="Salvar", command=lambda: setDllPath(dll_matrix))
-    salvar.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+    SaveConfirmations = tk.Button(dll_config_frame, text="Salvar", command=lambda: setDllPath(dll_matrix))
+    SaveConfirmations.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
     
     dll_config_frame.pack(padx=5, pady=5)
     
