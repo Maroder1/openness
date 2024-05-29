@@ -6,9 +6,11 @@ build_exe_options = {
     "packages": ["pywinauto", "tkinter", "Openness", "sqlite3"],
     "include_files": [
         "Openness.py",
-        "MlfbManagement.py",
-        "UserConfig.py",
-        "Openness.db",
+        os.path.join("repositories", "Connection.py"),
+        os.path.join("repositories", "MlfbManagement.py"),
+        os.path.join("repositories", "UserConfig.py"),
+        os.path.join("repositories", "ValidateDb.py"),
+        os.path.join("repositories", "Openness.db"),
         os.path.join(sys.base_prefix, 'DLLs', 'sqlite3.dll')
     ]
 }

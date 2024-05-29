@@ -1,10 +1,11 @@
 import sys
 sys.coinit_flags = 2
 import pywinauto
-import UserConfig
-import MlfbManagement
 import tkinter as tk
 from tkinter import filedialog, ttk 
+
+from repositories import UserConfig
+from repositories import MlfbManagement
 
 import Openness
 
@@ -134,10 +135,10 @@ def main_screen():
         
         # Botão Configurações
         botao_config = tk.Button(user_config, text="...", command=user_config_screen)
-        botao_config.grid(row=0, column=0, padx=5, pady=5)
+        botao_config.pack(padx=5, pady=5, anchor='w')
         screen_frames.append(botao_config)
         
-        user_config.pack(padx=5, pady=5)
+        user_config.pack(padx=5, pady=5, anchor='w')
         
         proj_config_frame = ttk.Frame(root)
         screen_frames.append(proj_config_frame)
