@@ -31,11 +31,13 @@ def Criar():
     Openness.create_project(project_dir, project_name, devices)
     update_status(None)
     # root.destroy()
-    
-# Caixa de dialogo
-def open_file_dialog():
+
+def open_rectory_dialog():
     global project_dir
     project_dir = filedialog.askdirectory()
+    
+def open_file_dialog():
+    return filedialog.askopenfilename()
     
 def adicionar_linha():
     
@@ -89,8 +91,9 @@ def update_status(status):
             
 def setDllPath(dll_matrix):
     for dll in dll_matrix:
-        print(dll)
-        # UserConfig.saveDll(dll[0], dll[1])
+        tia_Version = dll["Tia_Version"]
+        path = dll["Path"]
+        UserConfig.saveDll(tia_Version, path)
     
 def slice_tupla(string):
     if len(string) >= 2:
@@ -151,7 +154,7 @@ def main_screen():
         entrada1.grid(row=0, column=1, padx=5, pady=5)
 
         # Endereço projeto
-        btn_open_dialog = tk.Button(proj_config_frame, text="Selecionar diretório", command=open_file_dialog)
+        btn_open_dialog = tk.Button(proj_config_frame, text="Selecionar diretório", command=open_rectory_dialog)
         btn_open_dialog.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
         # Botão para criar
@@ -187,36 +190,32 @@ def user_config_screen():
 
     dll_matrix = []
     
+    def setDllTuple(Tia_Version):
+        
+        info_dll = {"Tia_Version": Tia_Version, "Path": open_file_dialog()}
+        print(info_dll)
+        dll_matrix.append(info_dll)
+    
     # Tia V15.1
     label151 = tk.Label(dll_config_frame, text="Tia V15.1:")
     label151.grid(row=0, column=0, padx=5, pady=5)
     
-    input151 = tk.Entry(dll_config_frame)
-    input151.grid(row=0, column=1, padx=5, pady=5)
-    
-    info_dll151 = {"Tia_Version": 151, "Path": input151.get()}
-    dll_matrix.append(info_dll151)
-    
+    Btn151 = tk.Button(dll_config_frame, command=lambda: setDllTuple(151))
+    Btn151.grid(row=0, column=1, padx=5, pady=5)    
     
     # Tia V16
     label16 = tk.Label(dll_config_frame, text="Tia V16:")
     label16.grid(row=1, column=0, padx=5, pady=5)
     
-    input16 = tk.Entry(dll_config_frame)
-    input16.grid(row=1, column=1, padx=5, pady=5)
-
-    info_dll16 = {"Tia_Version": 16, "Path": input16.get()}
-    dll_matrix.append(info_dll16)
+    Btn16 = tk.Button(dll_config_frame, command=lambda: setDllTuple(16))
+    Btn16.grid(row=1, column=1, padx=5, pady=5)
     
     # Tia V17
     label17 = tk.Label(dll_config_frame, text="Tia V17:")
     label17.grid(row=2, column=0, padx=5, pady=5)
     
-    input17 = tk.Entry(dll_config_frame)
-    input17.grid(row=2, column=1, padx=5, pady=5)
-
-    info_dll17 = {"Tia_Version": 151, "Path": input17.get()}
-    dll_matrix.append(info_dll17)
+    Btn17 = tk.Button(dll_config_frame, command=lambda: setDllTuple(17))
+    Btn17.grid(row=2, column=1, padx=5, pady=5,)
     
     salvar = tk.Button(dll_config_frame, text="Salvar", command=lambda: setDllPath(dll_matrix))
     salvar.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
