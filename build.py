@@ -1,6 +1,6 @@
 import subprocess
 import os
-from Core.repositories.ValidateDb import create_db
+from Core.repositories.ValidateDb import validate_db
 
 current_path = os.path.abspath(__file__)
 core_path = os.path.join(os.path.dirname(current_path), "Core")
@@ -19,7 +19,7 @@ def uninstall_dependencies():
     subprocess.call(["pip", "uninstall", "-r", requirements_file])
 
 def build():
-    create_db()
+    validate_db()
     global core_path
     os.chdir(core_path)
     setup_file = os.path.join(core_path, "setup.py")

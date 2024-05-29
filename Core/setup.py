@@ -11,6 +11,8 @@ build_exe_options = {
         os.path.join("repositories", "UserConfig.py"),
         os.path.join("repositories", "ValidateDb.py"),
         os.path.join("repositories", "Openness.db"),
+        os.path.join("Database", "ddl.sql"),
+        os.path.join("Database", "mlfb", "PLC_List.csv"),
         os.path.join(sys.base_prefix, 'DLLs', 'sqlite3.dll')
     ]
 }
