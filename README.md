@@ -14,10 +14,13 @@ https://github.com/Maroder1/TIA-openness
 
  1. Install TIA v15.1 professional, make sure openness is checked [default]
 	[Link to TIA v15.1 trail](https://support.industry.siemens.com/cs/ww/en/view/109761045)
- 2. Right clik "My computer" -> Manage -> System tools -> Local users and groups - > Groups-> Double click “Siemens TIA Openness” and add your username
->HINT: 
-> Press Win + R on your keyboard and then type "lusrmgr.msc" and hit Enter.
-3. Edit the file path in the example file to match your installation of Siemens.Engineering.dll
+
+ 2. Add your user to the Siemens TIA Opennesss Group as shown on page 27 [here](https://cache.industry.siemens.com/dl/files/163/109477163/att_926042/v1/TIAPortalOpennessenUS_en-US.pdf)
+
+ > How: Right clik "My computer" -> Manage -> System tools -> Local users and groups - > Groups-> Double click “Siemens TIA Openness” and add your username
+ 
+> HINT: Press Win + R on your keyboard and then type "lusrmgr.msc" and hit Enter.
+ 3. Edit the file path in the example file to match your installation of Siemens.Engineering.dll
 
 More details can be found in the Tia Openness [documentation](https://support.industry.siemens.com/cs/document/109792902/tia-portal-openness-automation-of-engineering-workflows?dti=0&lc=en-WW)
 
