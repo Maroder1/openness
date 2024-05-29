@@ -183,6 +183,9 @@ def user_config_screen():
     usr_config_screen.title("Configurações do usuário")
     usr_config_screen.geometry("540x360")
     
+    usr_config_screen.transient(root)
+    usr_config_screen.grab_set()
+    
     nova_label = tk.Label(usr_config_screen, text="Aqui você pode configurar suas preferências")
     nova_label.pack()
     

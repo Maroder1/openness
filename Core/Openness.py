@@ -1,7 +1,11 @@
 import clr
+from repositories import UserConfig
+
 from System.IO import DirectoryInfo
 
-project_dll = r'C:\Program Files\Siemens\Automation\Portal V15_1\PublicAPI\V15.1\Siemens.Engineering.dll'
+tuple = UserConfig.getDllPath(151)
+project_dll = r'' + tuple[0]
+# project_dll = r'C:\Program Files\Siemens\Automation\Portal V15_1\PublicAPI\V15.1\Siemens.Engineering.dll'
 clr.AddReference(project_dll)
 
 import os
