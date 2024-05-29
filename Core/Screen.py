@@ -17,13 +17,13 @@ root.title("RPA Tia Openness")
 # Variavel no nome do projeto
 project_name_var=tk.StringVar()
 
+
 ############### FUNCTIONS ################
 
-# Função para fechar a janela
 def CreateProject():
     project_name = project_name_var.get()
     
-    if UserConfig.getDllPath(151):
+    if not UserConfig.CheckDll(151):
         label_status.config(text="Erro: Dll não configurada para esta versão do TIA")
         return
     
@@ -31,6 +31,7 @@ def CreateProject():
         devices = []
         for linha in InfoHardware:
             devices.append({"HardwareType": linha["combobox"].get(), "Mlfb":linha["mlfb"].get(), "Name": linha["entry"].get()})   
+        label_status.config(text="Criando projeto...")
         Openness.create_project(project_dir, project_name, devices)
     
     else:
