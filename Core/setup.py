@@ -3,16 +3,26 @@ import os
 from cx_Freeze import setup, Executable
 
 build_exe_options = {
-    "packages": ["pywinauto", "tkinter", "OpennessController", "sqlite3"],
+    "packages": ["pywinauto", "tkinter", "sqlite3"],
     "include_files": [
-        "OpennessController.py",
+        # Controller
+        os.path.join("Controller", "OpennessController.py"),
+        
+        # Services
+        os.path.join("Services", "OpennessService.py"),
+        
+        # repositories
         os.path.join("repositories", "Connection.py"),
         os.path.join("repositories", "MlfbManagement.py"),
         os.path.join("repositories", "UserConfig.py"),
         os.path.join("repositories", "ValidateDb.py"),
         os.path.join("repositories", "Openness.db"),
+        
+        # Database
         os.path.join("Database", "ddl.sql"),
         os.path.join("Database", "mlfb", "PLC_List.csv"),
+        
+        # SQLite
         os.path.join(sys.base_prefix, 'DLLs', 'sqlite3.dll')
     ]
 }

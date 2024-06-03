@@ -7,7 +7,7 @@ from tkinter import filedialog, ttk
 from repositories import UserConfig
 from repositories import MlfbManagement
 
-import OpennessController
+import Controller.OpennessController as OpennessController
 
 # Criando a janela principal
 root = tk.Tk()

@@ -2,6 +2,7 @@ import os
 import shutil
 import clr
 from repositories import UserConfig
+from Services import OpennessService
 from System.IO import DirectoryInfo
 
 def add_DLL(tia_Version):
@@ -34,13 +35,10 @@ mytia = None
 
 RPA_status = ""
 
-def set_project_dir(path):
-    global project_dir
-    project_dir = path.replace("/", "\\")
-
 def create_project(project_path, project_name, hardware):
     
-    set_project_dir(project_path)
+    global project_dir
+    project_dir = OpennessService.set_project_dir(project_path)
     
     try:
         project_path = DirectoryInfo (project_dir)
@@ -64,28 +62,9 @@ def create_project(project_path, project_name, hardware):
         for device in hardware:
             deviceName = device["Name"]
             deviceMlfb = device["Mlfb"]
-
-            if device["HardwareType"] == "PLC":
-                RPA_status = 'Creating CPU: ', deviceName
-                print(RPA_status)
-                config_Plc = "OrderNumber:"+deviceMlfb+"/V1.6"
-                myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
-                
-            elif device["HardwareType"] == "HMI":
-                RPA_status = 'Creating HMI: ', deviceName
-                print(RPA_status)
-                config_Hmi = 'OrderNumber:6AV2 124-0GC01-0AX0/15.1.0.0'
-                myproject.Devices.CreateWithItem(config_Hmi, deviceName, None)
+            deviceType = device["HardwareType"]
             
-            elif device["HardwareType"] == "IO Node":
-                RPA_status = 'Creating IO Node: ', deviceName
-                print(RPA_status)
-                confing_IOnode = 'OrderNumber:6ES7 155-6AU01-0BN0/V4.1'
-                myproject.Devices.CreateWithItem(confing_IOnode, deviceName, deviceName)
-                
-            else:
-                RPA_status = 'Unknown hardware type: ', device["HardwareType"]
-                print(RPA_status)
+            OpennessService.addHardware(deviceType, deviceName, deviceMlfb, myproject)
             
         RPA_status = 'Project created successfully!'
         print(RPA_status)
