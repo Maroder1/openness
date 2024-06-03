@@ -3,9 +3,9 @@ import os
 from cx_Freeze import setup, Executable
 
 build_exe_options = {
-    "packages": ["pywinauto", "tkinter", "Openness", "sqlite3"],
+    "packages": ["pywinauto", "tkinter", "OpennessController", "sqlite3"],
     "include_files": [
-        "Openness.py",
+        "OpennessController.py",
         os.path.join("repositories", "Connection.py"),
         os.path.join("repositories", "MlfbManagement.py"),
         os.path.join("repositories", "UserConfig.py"),

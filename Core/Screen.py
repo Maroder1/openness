@@ -7,7 +7,7 @@ from tkinter import filedialog, ttk
 from repositories import UserConfig
 from repositories import MlfbManagement
 
-import Openness
+import OpennessController
 
 # Criando a janela principal
 root = tk.Tk()
@@ -32,7 +32,7 @@ def CreateProject():
         for linha in InfoHardware:
             devices.append({"HardwareType": linha["combobox"].get(), "Mlfb":linha["mlfb"].get(), "Name": linha["entry"].get()})   
         label_status.config(text="Criando projeto...")
-        Openness.create_project(project_dir, project_name, devices)
+        OpennessController.create_project(project_dir, project_name, devices)
     
     else:
         label_status.config(text="Erro: Nome do projeto ou diretório não informados")
@@ -89,8 +89,8 @@ def update_status(status):
     if screen_instance:
         global RAP_status_Tela
         if not status:
-            if RAP_status_Tela != Openness.RPA_status:
-                RAP_status_Tela = Openness.RPA_status
+            if RAP_status_Tela != OpennessController.RPA_status:
+                RAP_status_Tela = OpennessController.RPA_status
         else:
             RAP_status_Tela = status
             
