@@ -81,10 +81,8 @@ def AssignIp(myproject):
     
     try:
         n_NetworkPorts = []
-        for device in myproject.Devices:
-            print('Device: ', device.Name)
-            device_item_aggregation = device.DeviceItems[1].DeviceItems
-            print("Tipo : ", type(device_item_aggregation))
+        for Devices in myproject.Devices:
+            device_item_aggregation = Devices.DeviceItems[1].DeviceItems
             for device in device_item_aggregation:
                 DeviceItems = device.DeviceItems
                 for deviceitem in DeviceItems:
@@ -102,6 +100,21 @@ def AssignIp(myproject):
         RPA_status = 'Error assigning IP: ', e
         print(RPA_status)
         
+def SetSubnetName(myproject):
+    RPA_status = 'Setting subnet name'
+    print(RPA_status)
+    
+    
+    # for enumerator in myproject.Subnets.GetEnumerator():
+    #     print(enumerator)
+    #     print(type(enumerator))
+        
+    mysubnet = myproject.Subnets.Create("System:Subnet.Ethernet", "NewSubnet")
+    # print(mysubnet)
+    
+    RPA_status = 'Subnet name set!'
+    print(RPA_status)
+    
 def export_Fb(PlcSoftware):
     
     Block = PlcSoftware.BlockGroup.Blocks.Find("MyBlock")

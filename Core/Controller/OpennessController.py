@@ -34,8 +34,10 @@ def create_project(project_path, project_name, hardware):
         RPA_status = 'Project created successfully!'
         print(RPA_status)
         
-        OpennessService.AssignIp(myproject)
-        RPA_status = 'IP assigned successfully!'
+        OpennessService.SetSubnetName(myproject)
+        
+        # OpennessService.AssignIp(myproject)
+        # RPA_status = 'IP assigned successfully!'
         
         # open_project()
         
