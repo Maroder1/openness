@@ -24,12 +24,12 @@ https://github.com/Maroder1/TIA-openness
 
 More details can be found in the Tia Openness [documentation](https://support.industry.siemens.com/cs/document/109792902/tia-portal-openness-automation-of-engineering-workflows?dti=0&lc=en-WW)
 
+[TIA Portal Openness Explorer](https://support.industry.siemens.com/cs/document/109760816/tia-portal-openness-explorer?dti=0&lc=en-BR) helps you to obtain an overview of the TIA Portal Openness API.
+
 ## Python installation
  1. [Download the Python installation wizard](https://www.python.org/downloads)
  2. Make sure Python is configured within the PATH 
 
-## Before build
-Before building, you must edit the "project_dll" variable, in Core/openness.py, so that it reflects the directory where the Siemens.Engineering.dll is saved on your machine
 
 ## How to build
  1. in the windows search bar type "command prompt" to open Command Promt (CMD)
