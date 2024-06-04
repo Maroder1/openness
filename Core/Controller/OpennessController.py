@@ -29,8 +29,13 @@ def create_project(project_path, project_name, hardware):
             
             OpennessService.addHardware(deviceType, deviceName, deviceMlfb, myproject)
             
+        myproject.Save()
+            
         RPA_status = 'Project created successfully!'
         print(RPA_status)
+        
+        OpennessService.AssignIp(myproject)
+        RPA_status = 'IP assigned successfully!'
         
         # open_project()
         
@@ -41,10 +46,14 @@ def create_project(project_path, project_name, hardware):
         print(RPA_status)
         return
     
-def open_project():
+def open_project(path):
+    RPA_status = 'Opening project'
+    print(RPA_status)
     try:
         mokedPath = r'C:\Users\Willian\Documents\Automation\Factory_IO\PickNPlace_V15.1\PickNPlace_V15.1.ap15_1'
-        projeto = OpennessService.open_project(mokedPath)
+        path = mokedPath
+        projeto = OpennessService.open_project(path)
+        print(projeto)
         export_Block(projeto)
     except Exception as e:
         RPA_status = 'Error opening project: ', e

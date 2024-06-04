@@ -40,29 +40,66 @@ def configurePath(path):
     return path.replace("/", "\\")
 
 def open_project(project_path):
-    projects = tia.TiaPortal.Projects
+    project_path = configurePath(project_path)
+    file_info = FileInfo(project_path)
+    
+    if not file_info.Exists:
+        print("Project file not found:", project_path)
+        return None
+    projects = tia.TiaPortal(tia.ProjectComposition.OpenWithUpgrade(project_path))
     return projects
 
 def addHardware(deviceType, deviceName, deviceMlfb, myproject):
-    if deviceType == "PLC":
-        print('Creating CPU: ', deviceName)
-        config_Plc = "OrderNumber:"+deviceMlfb+"/V1.6"
-        myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
-        
-    elif deviceType == "HMI":
-        RPA_status = 'Creating HMI: ', deviceName
-        print(RPA_status)
-        config_Hmi = 'OrderNumber:6AV2 124-0GC01-0AX0/15.1.0.0'
-        myproject.Devices.CreateWithItem(config_Hmi, deviceName, None)
-    
-    elif deviceType == "IO Node":
-        RPA_status = 'Creating IO Node: ', deviceName
-        print(RPA_status)
-        confing_IOnode = 'OrderNumber:6ES7 155-6AU01-0BN0/V4.1'
-        myproject.Devices.CreateWithItem(confing_IOnode, deviceName, deviceName)
-        
-    else:
+    try:
+        mydevice = None
+        if deviceType == "PLC":
+            print('Creating CPU: ', deviceName)
+            config_Plc = "OrderNumber:"+deviceMlfb+"/V1.6"
+            mydevice = myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
+            
+        elif deviceType == "HMI":
+            RPA_status = 'Creating HMI: ', deviceName
+            print(RPA_status)
+            config_Hmi = 'OrderNumber:6AV2 124-0GC01-0AX0/15.1.0.0'
+            mydevice = myproject.Devices.CreateWithItem(config_Hmi, deviceName, None)
+
+        elif deviceType == "IO Node":
+            RPA_status = 'Creating IO Node: ', deviceName
+            print(RPA_status)
+            confing_IOnode = 'OrderNumber:6ES7 155-6AU01-0BN0/V4.1'
+            mydevice = myproject.Devices.CreateWithItem(confing_IOnode, deviceName, deviceName)
+            
+    except Exception as e:
         RPA_status = 'Unknown hardware type: ', deviceType
+        print(RPA_status)
+        RPA_status = 'Error creating hardware: ', e
+        print(RPA_status)
+        
+def AssignIp(myproject):
+    
+    print('Assigning IP addresses')
+    
+    try:
+        n_NetworkPorts = []
+        for device in myproject.Devices:
+            print('Device: ', device.Name)
+            device_item_aggregation = device.DeviceItems[1].DeviceItems
+            print("Tipo : ", type(device_item_aggregation))
+            for device in device_item_aggregation:
+                DeviceItems = device.DeviceItems
+                for deviceitem in DeviceItems:
+                    networkPort = tia.IEngineeringServiceProvider(deviceitem).GetService[hwf.NetworkPort]()
+                    if type(networkPort) is hwf.NetworkPort:
+                        print("Tipo da porta: ", type(networkPort))
+                        n_NetworkPorts.append(networkPort)
+
+        print('Network Ports: ', len(n_NetworkPorts))
+        n_NetworkPorts[0].ConnectToPort(n_NetworkPorts[3])
+        
+        return
+    
+    except Exception as e:
+        RPA_status = 'Error assigning IP: ', e
         print(RPA_status)
         
 def export_Fb(PlcSoftware):
