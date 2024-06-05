@@ -1,6 +1,7 @@
 from Services import OpennessService
 
 RPA_status = ""
+hardwareList = []
 
 def create_project(project_path, project_name, hardware):
 
@@ -27,19 +28,18 @@ def create_project(project_path, project_name, hardware):
             deviceMlfb = device["Mlfb"]
             deviceType = device["HardwareType"]
             
-            OpennessService.addHardware(deviceType, deviceName, deviceMlfb, myproject)
+            hardwareList.append(OpennessService.addHardware(deviceType, deviceName, deviceMlfb, myproject))
             
         myproject.Save()
             
         RPA_status = 'Project created successfully!'
         print(RPA_status)
         
-        OpennessService.SetSubnetName(myproject)
+        mysubnet = OpennessService.SetSubnetName(myproject)
+        RPA_status = 'Subnet created successfully!'
+        print(RPA_status)
         
-        # OpennessService.AssignIp(myproject)
-        # RPA_status = 'IP assigned successfully!'
-        
-        # open_project()
+        OpennessService.GetAllProfinetInterfaces(myproject)
         
         return
 
