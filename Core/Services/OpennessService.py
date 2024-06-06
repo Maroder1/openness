@@ -1,6 +1,7 @@
 import os
 import clr
 from System.IO import DirectoryInfo, FileInfo
+from System import Type
 from repositories import UserConfig
 
 
@@ -51,23 +52,22 @@ def open_project(project_path):
 
 def addHardware(deviceType, deviceName, deviceMlfb, myproject):
     try:
-        mydevice = None
         if deviceType == "PLC":
             print('Creating CPU: ', deviceName)
             config_Plc = "OrderNumber:"+deviceMlfb+"/V1.6"
-            mydevice = myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
+            return myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
             
         elif deviceType == "HMI":
             RPA_status = 'Creating HMI: ', deviceName
             print(RPA_status)
             config_Hmi = 'OrderNumber:6AV2 124-0GC01-0AX0/15.1.0.0'
-            mydevice = myproject.Devices.CreateWithItem(config_Hmi, deviceName, None)
+            return myproject.Devices.CreateWithItem(config_Hmi, deviceName, None)
 
         elif deviceType == "IO Node":
             RPA_status = 'Creating IO Node: ', deviceName
             print(RPA_status)
             confing_IOnode = 'OrderNumber:6ES7 155-6AU01-0BN0/V4.1'
-            mydevice = myproject.Devices.CreateWithItem(confing_IOnode, deviceName, deviceName)
+            return myproject.Devices.CreateWithItem(confing_IOnode, deviceName, deviceName)
             
     except Exception as e:
         RPA_status = 'Unknown hardware type: ', deviceType
@@ -75,33 +75,42 @@ def addHardware(deviceType, deviceName, deviceMlfb, myproject):
         RPA_status = 'Error creating hardware: ', e
         print(RPA_status)
         
-def AssignIp(myproject):
-    
-    print('Assigning IP addresses')
-    
-    try:
-        n_NetworkPorts = []
-        for device in myproject.Devices:
-            print('Device: ', device.Name)
-            device_item_aggregation = device.DeviceItems[1].DeviceItems
-            print("Tipo : ", type(device_item_aggregation))
-            for device in device_item_aggregation:
-                DeviceItems = device.DeviceItems
-                for deviceitem in DeviceItems:
-                    networkPort = tia.IEngineeringServiceProvider(deviceitem).GetService[hwf.NetworkPort]()
-                    if type(networkPort) is hwf.NetworkPort:
-                        print("Tipo da porta: ", type(networkPort))
-                        n_NetworkPorts.append(networkPort)
+def GetAllProfinetInterfaces(myproject):
+    RPA_status = 'Getting all PROFINET interfaces'
+    print(RPA_status)
 
-        print('Network Ports: ', len(n_NetworkPorts))
-        n_NetworkPorts[0].ConnectToPort(n_NetworkPorts[3])
-        
-        return
-    
+    try:
+        network_ports = []
+        for Devices in myproject.Devices:
+            cpu = Devices.DeviceItems[1].DeviceItems
+            for device in cpu:
+                deviceitemName = device.GetAttribute("Name")
+                if deviceitemName == "PROFINET interface_1":
+                    print(deviceitemName)
+                    network_interface_type = hwf.NetworkInterface
+                    print("Tipo network_interface_type: ", type(network_interface_type))
+                    getServiceMethod = device.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
+                    networkInterface = getServiceMethod.Invoke(device, None)
+                    network_ports.append(networkInterface)
+        return network_ports
+
     except Exception as e:
-        RPA_status = 'Error assigning IP: ', e
+        RPA_status = 'Error getting PROFINET interfaces: ', e
         print(RPA_status)
         
+def ConnectToSubnet(node, subnet):
+    try:
+        RPA_status = 'Connecting to subnet'
+        node.ConnectToSubnet(subnet)
+    except Exception as e:
+        RPA_status = 'Error connecting to subnet: ', e
+        print(RPA_status)
+        
+def SetSubnetName(myproject):
+    RPA_status = 'Setting subnet name'
+    print(RPA_status)
+    return myproject.Subnets.Create("System:Subnet.Ethernet", "NewSubnet")    
+    
 def export_Fb(PlcSoftware):
     
     Block = PlcSoftware.BlockGroup.Blocks.Find("MyBlock")

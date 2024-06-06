@@ -5,6 +5,7 @@ import subprocess
 from System.IO import FileInfo # type: ignore
 
 RPA_status = ""
+hardwareList = []
 
 def create_project(project_path, project_name, hardware):
 
@@ -31,26 +32,20 @@ def create_project(project_path, project_name, hardware):
             deviceMlfb = device["Mlfb"]
             deviceType = device["HardwareType"]
             
-            OpennessService.addHardware(deviceType, deviceName, deviceMlfb, myproject)
+            hardwareList.append(OpennessService.addHardware(deviceType, deviceName, deviceMlfb, myproject))
             
         myproject.Save()
             
         RPA_status = 'Project created successfully!'
         print(RPA_status)
         
-        # Importing file
-        try:
-            myproject.BlockGroup.Blocks.Import(r"C:\Users\gabri\Documents\Automation\0071_Falhas.db")
-            RPA_status = 'File imported successfully!'
-        except Exception as import_error:
-            RPA_status = 'Error importing file: {}'.format(import_error)
-        
+        mysubnet = OpennessService.SetSubnetName(myproject)
         print(RPA_status)
         
-        OpennessService.AssignIp(myproject)
-        RPA_status = 'IP assigned successfully!'
+        network_ports = OpennessService.GetAllProfinetInterfaces(myproject)
         
-        # open_project()
+        for port in network_ports:
+            OpennessService.ConnectToSubnet(port.Nodes[0], mysubnet)
         
         return
 
