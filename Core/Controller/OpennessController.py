@@ -59,7 +59,7 @@ def create_project(project_path, project_name, hardware):
         print(RPA_status)
         return
     
-def open_project(path):
+def open_project():
     RPA_status = 'Opening project'
     print(RPA_status)
     try:
