@@ -1,6 +1,7 @@
 import os
 import clr
 from System.IO import DirectoryInfo, FileInfo
+from System import Type
 from repositories import UserConfig
 
 
@@ -79,7 +80,6 @@ def GetAllProfinetInterfaces(myproject):
     print(RPA_status)
 
     try:
-        # Get all PROFINET interfaces
         network_ports = []
         for Devices in myproject.Devices:
             cpu = Devices.DeviceItems[1].DeviceItems
@@ -87,9 +87,12 @@ def GetAllProfinetInterfaces(myproject):
                 deviceitemName = device.GetAttribute("Name")
                 if deviceitemName == "PROFINET interface_1":
                     print(deviceitemName)
-                    network_interface_type = clr.GetClrType(hwf.NetworkInterface)
-                    Nodes = device.GetService<network_interface_type>()
-                    network_ports.append(Nodes)
+                    network_interface_type = hwf.NetworkInterface
+                    print("Tipo network_interface_type: ", type(network_interface_type))
+                    getServiceMethod = device.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
+                    networkInterface = getServiceMethod.Invoke(device, None)
+                    network_ports.append(networkInterface)
+        return network_ports
 
     except Exception as e:
         RPA_status = 'Error getting PROFINET interfaces: ', e

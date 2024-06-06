@@ -39,7 +39,9 @@ def create_project(project_path, project_name, hardware):
         RPA_status = 'Subnet created successfully!'
         print(RPA_status)
         
-        OpennessService.GetAllProfinetInterfaces(myproject)
+        network_ports = OpennessService.GetAllProfinetInterfaces(myproject)
+        print("Type: ", type(network_ports[0]))
+        print(network_ports[0].GetType())
         
         return
 
