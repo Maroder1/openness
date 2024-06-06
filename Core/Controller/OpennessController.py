@@ -1,4 +1,8 @@
+import os
 from Services import OpennessService
+import traceback
+import subprocess
+from System.IO import FileInfo # type: ignore
 
 RPA_status = ""
 hardwareList = []
@@ -54,16 +58,28 @@ def open_project(path):
     RPA_status = 'Opening project'
     print(RPA_status)
     try:
-        mokedPath = r'C:\Users\Willian\Documents\Automation\Factory_IO\PickNPlace_V15.1\PickNPlace_V15.1.ap15_1'
-        path = mokedPath
-        projeto = OpennessService.open_project(path)
-        print(projeto)
-        export_Block(projeto)
+        # Define o caminho do TIA Portal
+        tia_portal_path = r"C:\Program Files\Siemens\Automation\Portal V16\Bin\Siemens.Automation.Portal.exe"
+        
+        # Verifica se o TIA Portal está instalado
+        if not os.path.isfile(tia_portal_path):
+            raise Exception("TIA Portal is not installed or the path is incorrect.")
+        
+        # Define o caminho do projeto
+        project_path = r"C:\Users\gabri\Documents\PROJETOS\AX_padrao\RCK - F598\RCK - F598.ap16"
+        
+        # Abre o TIA Portal e o projeto
+        print("Opening TIA Portal and project...")
+        subprocess.Popen([tia_portal_path, project_path])
+        
+        print("Project opened successfully.")
+    
+        export_Block("-A110")
     except Exception as e:
-        RPA_status = 'Error opening project: ', e
+        RPA_status = f'Error opening project: {e}\n{traceback.format_exc()}'
         print(RPA_status)
         return
-    
+
 def export_Block(PlcSoftware):
     RPA_status = 'Exporting block'
     print(RPA_status)

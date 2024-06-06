@@ -6,6 +6,7 @@ from tkinter import filedialog, ttk
 
 from repositories import UserConfig
 from repositories import MlfbManagement
+from Controller.OpennessController import open_project, export_Block
 
 import Controller.OpennessController as OpennessController
 
@@ -165,6 +166,15 @@ def main_screen():
         # Button para criar
         criarBtn = tk.Button(proj_config_frame, text="Crair projeto", command=CreateProject)
         criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+
+        # Button para abrir projeto
+        criarBtn = tk.Button(proj_config_frame, text="Abrir projeto", command=open_project)
+        criarBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+        
+        # Button para exportar bloco
+        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=export_Block)
+        criarBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
+
 
         proj_config_frame.pack()
 
