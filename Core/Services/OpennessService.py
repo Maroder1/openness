@@ -76,28 +76,77 @@ def addHardware(deviceType, deviceName, deviceMlfb, myproject):
         print(RPA_status)
         
 def GetAllProfinetInterfaces(myproject):
-    RPA_status = 'Getting all PROFINET interfaces'
+    RPA_status = 'Getting PROFINET interfaces'
     print(RPA_status)
-
     try:
         network_ports = []
-        for Devices in myproject.Devices:
-            cpu = Devices.DeviceItems[1].DeviceItems
-            for device in cpu:
-                deviceitemName = device.GetAttribute("Name")
-                if deviceitemName == "PROFINET interface_1":
-                    print(deviceitemName)
-                    network_interface_type = hwf.NetworkInterface
-                    print("Tipo network_interface_type: ", type(network_interface_type))
-                    getServiceMethod = device.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
-                    networkInterface = getServiceMethod.Invoke(device, None)
-                    network_ports.append(networkInterface)
+        for device in myproject.Devices:
+            if (not is_gsd(device)):
+                hardware_type = getHardwareType(device)
+                
+                if (hardware_type == "CPU"):
+                    network_interface = get_network_interface_CPU(device)
+                    network_ports.append(network_interface)
+                    
+                elif (hardware_type == "HMI"):
+                    network_interface = get_network_interface_HMI(device)
+                    network_ports.append(network_interface)
+                    
+            else:
+                RPA_status = 'Device' + device.GetAttribute("Name") + ' is GSD: '
+                print(RPA_status)
+                
         return network_ports
 
     except Exception as e:
         RPA_status = 'Error getting PROFINET interfaces: ', e
         print(RPA_status)
         
+def getCompositionPosition2(deviceComposition):
+    return deviceComposition.DeviceItems[1]
+        
+def get_network_interface_CPU(deviceComposition):
+    cpu = getCompositionPosition2(deviceComposition).DeviceItems
+    for option in cpu:
+        optionName = option.GetAttribute("Name")
+        if optionName == "PROFINET interface_1":
+            network_interface_type = hwf.NetworkInterface
+            getServiceMethod = option.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
+            return getServiceMethod.Invoke(option, None)
+            
+def get_network_interface_HMI(deviceComposition):
+    hmi = getCompositionPosition2(deviceComposition)
+    print("HMI")
+        
+def is_gsd(device):
+    try:
+        if device.GetAttribute("IsGsd") == True:
+            return True
+        return False
+    except Exception as e:
+        RPA_status = 'Error checking GSD: ', e
+        print(RPA_status)
+        
+def is_cpu(device):
+    try:
+        if str(device.GetAttribute("Classification")) == "CPU":
+            return True
+        return False
+    except Exception as e:
+        RPA_status = 'Error checking CPU: ', e
+        print(RPA_status)
+        
+def getHardwareType(device):
+    try:
+        device_item_impl = getCompositionPosition2(device)
+        if (is_cpu(device_item_impl)):
+            return "CPU"
+        else:
+            print("Não é CPU")
+    except Exception as e:
+        RPA_status = 'Error getting hardware type: ', e
+        print(RPA_status)
+
 def ConnectToSubnet(node, subnet):
     try:
         RPA_status = 'Connecting to subnet'
