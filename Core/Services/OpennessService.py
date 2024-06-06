@@ -98,6 +98,14 @@ def GetAllProfinetInterfaces(myproject):
         RPA_status = 'Error getting PROFINET interfaces: ', e
         print(RPA_status)
         
+def ConnectToSubnet(node, subnet):
+    try:
+        RPA_status = 'Connecting to subnet'
+        node.ConnectToSubnet(subnet)
+    except Exception as e:
+        RPA_status = 'Error connecting to subnet: ', e
+        print(RPA_status)
+        
 def SetSubnetName(myproject):
     RPA_status = 'Setting subnet name'
     print(RPA_status)
