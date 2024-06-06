@@ -30,7 +30,8 @@ def add_DLL(tia_Version):
 if UserConfig.CheckDll(151):
     add_DLL(151)
     
-def create_project():
+def open_tia_ui():
+    # Create an instance of Tia Portal
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
 
 def set_project_dir(path):
@@ -47,8 +48,8 @@ def open_project(project_path):
     if not file_info.Exists:
         print("Project file not found:", project_path)
         return None
-    projects = tia.TiaPortal(tia.ProjectComposition.OpenWithUpgrade(project_path))
-    return projects
+    mytia = open_tia_ui()
+    return mytia.Projects.Open(file_info)
 
 def addHardware(deviceType, deviceName, deviceMlfb, myproject):
     try:

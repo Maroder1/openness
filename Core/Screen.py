@@ -37,6 +37,15 @@ def CreateProject():
     
     else:
         label_status.config(text="Erro: Nome do projeto ou diretório não informados")
+        
+def opn_project():
+    project_path = open_file_dialog()
+    if project_path != None and project_path != '':
+        RAP_status_Tela = "Abrindo projeto..."
+        print(RAP_status_Tela)
+        open_project(project_path)
+    else:
+        label_status.config(text="Erro: Projeto não selecionado")
 
 def open_directory_dialog():
     global project_dir
@@ -168,7 +177,7 @@ def main_screen():
         criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
         # Button para abrir projeto
-        criarBtn = tk.Button(proj_config_frame, text="Abrir projeto", command=open_project)
+        criarBtn = tk.Button(proj_config_frame, text="Abrir projeto", command=opn_project)
         criarBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
         # Button para exportar bloco
