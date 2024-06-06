@@ -6,7 +6,7 @@ from tkinter import filedialog, ttk, messagebox
 
 from repositories import UserConfig
 from repositories import MlfbManagement
-from Controller.OpennessController import open_project, chama_export
+from Controller.OpennessController import open_project
 
 import Controller.OpennessController as OpennessController
 
@@ -184,7 +184,7 @@ def main_screen():
         criarBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
         # Button para exportar bloco
-        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=chama_export)
+        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=open_project)
         criarBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
 
