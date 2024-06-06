@@ -36,18 +36,22 @@ def create_project(project_path, project_name, hardware):
             
         myproject.Save()
             
-        RPA_status = 'Project created successfully!'
-        print(RPA_status)
         
         mysubnet = OpennessService.SetSubnetName(myproject)
-        print(RPA_status)
         
-        network_ports = OpennessService.GetAllProfinetInterfaces(myproject)
+        ProfinetInterfaces = OpennessService.GetAllProfinetInterfaces(myproject)
+        print("N de interfaces PROFINET: ", len(ProfinetInterfaces))
         
-        for port in network_ports:
-            OpennessService.ConnectToSubnet(port.Nodes[0], mysubnet)
+        for port in ProfinetInterfaces:
+            node = port.Nodes[0]
+            OpennessService.ConnectToSubnet(node, mysubnet)
+            
+        RPA_status = "Rede PROFINET configurada com sucesso!"
         
         myproject.Save()
+        
+        RPA_status = 'Project created successfully!'
+        print(RPA_status)
         return
 
     except Exception as e:
