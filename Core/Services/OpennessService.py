@@ -85,12 +85,12 @@ def GetAllProfinetInterfaces(myproject):
                 hardware_type = getHardwareType(device)
                 
                 if (hardware_type == "CPU"):
-                    network_interface = get_network_interface_CPU(device)
-                    network_ports.append(network_interface)
+                    network_interface_cpu = get_network_interface_CPU(device)
+                    network_ports.append(network_interface_cpu)
                     
                 elif (hardware_type == "HMI"):
-                    network_interface = get_network_interface_HMI(device)
-                    network_ports.append(network_interface)
+                    network_interface_ihm = get_network_interface_HMI(device)
+                    network_ports.append(network_interface_ihm)
                     
             else:
                 RPA_status = 'Device' + device.GetAttribute("Name") + ' is GSD: '
@@ -102,11 +102,11 @@ def GetAllProfinetInterfaces(myproject):
         RPA_status = 'Error getting PROFINET interfaces: ', e
         print(RPA_status)
         
-def getCompositionPosition2(deviceComposition):
-    return deviceComposition.DeviceItems[1]
+def getCompositionPosition(deviceComposition):
+    return deviceComposition.DeviceItems
         
 def get_network_interface_CPU(deviceComposition):
-    cpu = getCompositionPosition2(deviceComposition).DeviceItems
+    cpu = getCompositionPosition(deviceComposition)[1].DeviceItems
     for option in cpu:
         optionName = option.GetAttribute("Name")
         if optionName == "PROFINET interface_1":
@@ -115,34 +115,56 @@ def get_network_interface_CPU(deviceComposition):
             return getServiceMethod.Invoke(option, None)
             
 def get_network_interface_HMI(deviceComposition):
-    hmi = getCompositionPosition2(deviceComposition)
-    print("HMI")
+    hmi = getCompositionPosition(deviceComposition)[1].DeviceItems
+    for option in hmi:
+        optionName = option.GetAttribute("Name")
+        if optionName == "PROFINET Interface_1":
+            network_interface_type = hwf.NetworkInterface
+            getServiceMethod = option.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
+            return getServiceMethod.Invoke(option, None)
         
 def is_gsd(device):
     try:
         if device.GetAttribute("IsGsd") == True:
             return True
         return False
+    
     except Exception as e:
         RPA_status = 'Error checking GSD: ', e
         print(RPA_status)
         
 def is_cpu(device):
     try:
-        if str(device.GetAttribute("Classification")) == "CPU":
+        device_item = device[1]
+        if str(device_item.GetAttribute("Classification")) == "CPU":
             return True
         return False
+    
     except Exception as e:
         RPA_status = 'Error checking CPU: ', e
+        print(RPA_status)
+
+def is_hmi(device):
+    try:
+        device_item = device[0]
+        type_identifier = str(device_item.GetAttribute("TypeIdentifier"))
+        
+        if (type_identifier.__contains__("OrderNumber:6AV")):
+            return True
+        return False
+    
+    except Exception as e:
+        RPA_status = 'Error checking HMI: ', e
         print(RPA_status)
         
 def getHardwareType(device):
     try:
-        device_item_impl = getCompositionPosition2(device)
+        device_item_impl = getCompositionPosition(device)
         if (is_cpu(device_item_impl)):
             return "CPU"
-        else:
-            print("Não é CPU")
+        elif (is_hmi(device_item_impl)):
+            return "HMI"
+            
     except Exception as e:
         RPA_status = 'Error getting hardware type: ', e
         print(RPA_status)
@@ -175,6 +197,3 @@ def export_Fb(PlcSoftware):
     with open(caminho_arquivo, 'w') as arquivo:
         # Escreve alguma coisa no arquivo
         arquivo.write(Block.Name)
-    
-    # Block.Export(new FileInfo(string.Format(@”D:\Samples\{0}.xml”, Block.Name)),
-    # # # ExportOptions.WithDefaults);

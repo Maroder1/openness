@@ -40,6 +40,7 @@ def create_project(project_path, project_name, hardware):
         mysubnet = OpennessService.SetSubnetName(myproject)
         
         ProfinetInterfaces = OpennessService.GetAllProfinetInterfaces(myproject)
+        print("N de interfaces PROFINET: ", len(ProfinetInterfaces))
         
         for port in ProfinetInterfaces:
             node = port.Nodes[0]
