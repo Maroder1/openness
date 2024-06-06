@@ -59,6 +59,10 @@ def AddHardware():
                 return False
         return True
 
+    def focus_next_widget(event):
+        event.widget.tk_focusNext().focus()
+        return "break"
+
     # Combobox 1º coluna
     combobox = ttk.Combobox(screen_frames[4], textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
     combobox.grid(row=NHardware, column=0, padx=5)
@@ -91,10 +95,12 @@ def AddHardware():
     # Adicione o callback de validação ao campo de entrada quando ele perder o foco ou quando a tecla Enter for pressionada
     entry.bind('<FocusOut>', validate_device_name)
     entry.bind('<Return>', validate_device_name)
+    entry.bind('<Return>', focus_next_widget)
 
     NHardware += 1
     
     InfoHardware.append(tupla_Input)
+
 
 
 def update_status(status):
