@@ -1,0 +1,4 @@
+[submodule "MLFB-scraping"]
+    path = MLFB-scraping
+    url = https://github.com/DankoCaboski/MLFB-scraping
+    branch = main
