@@ -47,6 +47,7 @@ def create_project(project_path, project_name, hardware):
         for port in network_ports:
             OpennessService.ConnectToSubnet(port.Nodes[0], mysubnet)
         
+        myproject.Save()
         return
 
     except Exception as e:
