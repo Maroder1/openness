@@ -1,35 +1,33 @@
 import os
 import clr
-from System.IO import DirectoryInfo, FileInfo
-from System import Type
+from System.IO import DirectoryInfo, FileInfo # type: ignore
+from System import Type # type: ignore
 from repositories import UserConfig
+
 
 
 def add_DLL(tia_Version):
     try:
         tuple = UserConfig.getDllPath(tia_Version)
+        if tuple is None:
+            print(f"Não foi possível obter o caminho da DLL para a versão {tia_Version}.")
+            return False
+        
         project_dll = r'' + tuple[0]
         clr.AddReference(project_dll)
         
-        global tia
-        global hwf
-        global comp
+        global tia, hwf, comp
 
-        import Siemens.Engineering as tia
-        import Siemens.Engineering.HW.Features as hwf
-        import Siemens.Engineering.Compiler as comp
+        import Siemens.Engineering as tia # type: ignore
+        import Siemens.Engineering.HW.Features as hwf # type: ignore
+        import Siemens.Engineering.Compiler as comp # type: ignore
 
-        RPA_status = 'DLL reference added successfully!'
-        print(RPA_status)
+        print('DLL reference added successfully!')
+        return True
 
     except Exception as e:
-        print ("Error adding DLL reference: ")
-        RPA_status = str(e)
-        print(RPA_status)
-        
-if UserConfig.CheckDll(151):
-    add_DLL(151)
-    
+        print("Error adding DLL reference: ", e)
+        return False
 def open_tia_ui():
     # Create an instance of Tia Portal
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
