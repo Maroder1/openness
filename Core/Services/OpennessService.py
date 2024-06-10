@@ -34,12 +34,12 @@ def open_tia_ui():
     # Create an instance of Tia Portal
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
 
+def configurePath(path):
+    return path.replace("/", "\\")
+
 def get_directory_info(path):
     project_dir = configurePath(path)
     return DirectoryInfo (project_dir)
-
-def configurePath(path):
-    return path.replace("/", "\\")
 
 def get_file_info(path):
     path = configurePath(path)
