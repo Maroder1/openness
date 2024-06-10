@@ -1,8 +1,9 @@
 import os
 import clr
-from System.IO import DirectoryInfo, FileInfo # type: ignore
+from System.IO import DirectoryInfo, FileInfo  # type: ignore
 from System import Type # type: ignore
 from repositories import UserConfig
+
 
 
 
@@ -196,3 +197,42 @@ def export_Fb(PlcSoftware):
     with open(caminho_arquivo, 'w') as arquivo:
         # Escreve alguma coisa no arquivo
         arquivo.write(Block.Name)
+
+
+#(TiaPortal.Projects[0].Devices[0].DeviceItems[1].GetService<SoftwareContainer>().Software as PlcSoftware).BlockGroup.Blocks
+
+
+def verify_and_import(myproject, device_name, file_path):
+    try:
+        # Verificar se o dispositivo existe no projeto
+        device = next((d for d in myproject.Devices if d.Name == device_name), None)
+        
+        if not device:
+            print(f"Device {device_name} not found in the project.")
+            return
+
+        # Acessar o serviço SoftwareContainer do item do dispositivo
+        software_container = device.DeviceItems[1].GetService[hwf.SoftwareContainer]()
+        
+        if not software_container:
+            print(f"No SoftwareContainer found for device {device_name}.")
+            return
+
+        # Acessar o software PLC do contêiner de software
+        plc_software = software_container.Software
+        
+        if not plc_software:
+            print(f"No PLC software found for device {device_name}.")
+            return
+
+        # Importar os blocos de código para o software PLC
+        print(f"Importing block to CPU: {device_name}")
+        import_options = tia.ImportOptions.Override
+        graphic_file_info = FileInfo(file_path)
+        blocos = plc_software.BlockGroup.Blocks.Import(graphic_file_info, import_options)
+        print(blocos)
+
+    except Exception as e:
+        print('Error verifying or importing file:', e)
+
+

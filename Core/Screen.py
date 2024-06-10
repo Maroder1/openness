@@ -235,7 +235,7 @@ def user_config_screen():
     
     dll_config_frame = ttk.Frame(usr_config_screen)
     
-    InstructionsDllPath = tk.Label(dll_config_frame, text="Indique o caminho das dlls:")
+    InstructionsDllPath = tk.Label(dll_config_frame, text="Selecione a versão do TIA Portal:")
     InstructionsDllPath.grid(row=0, column=0, padx=5, pady=5)
 
     dll_matrix = []

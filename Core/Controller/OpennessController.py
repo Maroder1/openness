@@ -48,13 +48,20 @@ def create_project(project_path, project_name, hardware):
         RPA_status = "Rede PROFINET configurada com sucesso!"
         
         myproject.Save()
+
+        # Import blocks to the device
+        for device in hardware:
+            deviceName = device["Name"]
+            import_block = OpennessService.verify_and_import(myproject, deviceName, r"C:\Users\gabri\Documents\PROJETOS\AX_padrao\Novo(a) Documento de Texto.txt")
+            print(import_block)
+        myproject.Save()
         
         RPA_status = 'Project created successfully!'
         print(RPA_status)
         return
 
     except Exception as e:
-        RPA_status = 'Error: ', e
+        RPA_status = f'Error: {e}'
         print(RPA_status)
         return
     
