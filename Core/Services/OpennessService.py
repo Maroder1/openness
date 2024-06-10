@@ -39,12 +39,27 @@ def configurePath(path):
 
 def get_directory_info(path):
     project_dir = configurePath(path)
-    return DirectoryInfo (project_dir)
+    return DirectoryInfo(project_dir)
 
 def get_file_info(path):
     path = configurePath(path)
     return FileInfo(path)
-    
+
+def get_service(tipo, item):
+    """
+    Retrieves an instance of the type for the item to be called from
+
+    Parameters:
+    - tipo: The type to retrieve.
+    - item: The item from which to retrieve the service.
+
+    Returns:
+    The retrieved service.
+
+    """
+    getServiceMethod = item.GetType().GetMethod("GetService").MakeGenericMethod(tipo)
+    return getServiceMethod.Invoke(item, None)
+
 def open_project(project_path):
     file_info = get_file_info(project_path)
     
@@ -114,18 +129,14 @@ def get_network_interface_CPU(deviceComposition):
     for option in cpu:
         optionName = option.GetAttribute("Name")
         if optionName == "PROFINET interface_1":
-            network_interface_type = hwf.NetworkInterface
-            getServiceMethod = option.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
-            return getServiceMethod.Invoke(option, None)
+            return get_service(hwf.NetworkInterface, option)
             
 def get_network_interface_HMI(deviceComposition):
     hmi = getCompositionPosition(deviceComposition)[1].DeviceItems
     for option in hmi:
         optionName = option.GetAttribute("Name")
         if optionName == "PROFINET Interface_1":
-            network_interface_type = hwf.NetworkInterface
-            getServiceMethod = option.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
-            return getServiceMethod.Invoke(option, None)
+            return get_service(hwf.NetworkInterface, option)
         
 def is_gsd(device):
     try:
