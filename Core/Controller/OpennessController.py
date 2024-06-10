@@ -8,7 +8,7 @@ hardwareList = []
 
 def create_project(project_path, project_name, hardware):
 
-    project_dir = OpennessService.set_project_dir(project_path)
+    project_dir = OpennessService.get_directory_info(project_path)
     
     try:
         
