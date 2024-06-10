@@ -33,16 +33,19 @@ def open_tia_ui():
     # Create an instance of Tia Portal
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
 
-def set_project_dir(path):
-    project_dir = configurePath(path)
-    return DirectoryInfo (project_dir)
-
 def configurePath(path):
     return path.replace("/", "\\")
 
+def get_directory_info(path):
+    project_dir = configurePath(path)
+    return DirectoryInfo (project_dir)
+
+def get_file_info(path):
+    path = configurePath(path)
+    return FileInfo(path)
+    
 def open_project(project_path):
-    project_path = configurePath(project_path)
-    file_info = FileInfo(project_path)
+    file_info = get_file_info(project_path)
     
     if not file_info.Exists:
         print("Project file not found:", project_path)
