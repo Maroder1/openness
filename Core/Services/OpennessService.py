@@ -46,21 +46,6 @@ def get_file_info(path):
     path = configurePath(path)
     return FileInfo(path)
 
-def get_service(tipo, item):
-    """
-    Retrieves an instance of the type for the item to be called from
-
-    Parameters:
-    - tipo: The type to retrieve.
-    - item: The item from which to retrieve the service.
-
-    Returns:
-    The retrieved service.
-
-    """
-    getServiceMethod = item.GetType().GetMethod("GetService").MakeGenericMethod(tipo)
-    return getServiceMethod.Invoke(item, None)
-
 def open_project(project_path):
     file_info = get_file_info(project_path)
     
@@ -133,6 +118,17 @@ def get_service(tipo, parent):
     except Exception as e:
         RPA_status = 'Error getting service: ', e
         print(RPA_status)
+        
+def get_software_container(parent):
+    try:
+        software_container = get_service(hwf.SoftwareContainer, parent)
+        if not software_container:
+            raise Exception("No SoftwareContainer found for device.")
+        else:
+            return software_container
+    except Exception as e:
+        RPA_status = 'Error getting software container: ', e
+        print(RPA_status)    
         
 def get_network_interface_CPU(deviceComposition):
     cpu = getCompositionPosition(deviceComposition)[1].DeviceItems
@@ -316,11 +312,7 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0):
 
         # Acessar o serviço SoftwareContainer do item do dispositivo
         parent = device.DeviceItems[1]
-        software_container = get_service(hwf.SoftwareContainer, parent)
-        
-        if not software_container:
-            print(f"No SoftwareContainer found for device {device_name}.")
-            return
+        software_container = get_software_container(parent)
 
         # Acessar o software PLC do contêiner de software
         plc_software = software_container.Software
