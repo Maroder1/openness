@@ -217,7 +217,7 @@ def editar_tags_xml(arquivo, novo_nome, novo_numero):
     with open(arquivo, 'w', encoding='utf-8') as file:
         file.write(conteudo)
 
-def verify_and_import(myproject, device_name, file_path, repetitions=0):
+def verify_and_import(myproject, device_name, file_path, repetitions=0, tipo='' ):
     try:
         # Verificar se o dispositivo existe no projeto
         device = next((d for d in myproject.Devices if d.Name == device_name), None)
@@ -241,8 +241,12 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0):
             return
 
         # Extrair nome e número base do XML
-        nome_base = "0070_Falhas"
-        numero_base = 70
+        if tipo == 'robo':
+            nome_base = "0070_robo"
+            numero_base = 70
+        else:
+            nome_base = "0080_Grampo"
+            numero_base = 80
 
         if not nome_base or not numero_base:
             print("Failed to extract base name or number from XML.")

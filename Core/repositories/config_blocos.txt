@@ -1,2 +1,2 @@
-Robô - Quantidade: 3, Importar: Sim
-Grampo - Quantidade: 0, Importar: Não
+Robô - Quantidade: 2
+Grampo - Quantidade: 2

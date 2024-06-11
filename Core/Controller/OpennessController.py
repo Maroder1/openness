@@ -6,7 +6,7 @@ import tkinter as tk
 RPA_status = ""
 hardwareList = []
 
-def create_project(project_path, project_name, hardware, rb_blocks_value, rb_import_state, gp_blocks_value, gp_import_state):
+def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blocks_value):
 
     project_dir = OpennessService.get_directory_info(project_path)
     
@@ -49,16 +49,17 @@ def create_project(project_path, project_name, hardware, rb_blocks_value, rb_imp
         
         myproject.Save()
 
-        if rb_import_state: 
+        if rb_blocks_value > 0 : 
             for device in hardware:
                 deviceName = device["Name"]
-                import_block = OpennessService.verify_and_import(myproject, deviceName, r"C:\Users\gabri\Documents\PROJETOS\AX_padrao\db_falhar - Copia.xml", repetitions= rb_blocks_value)
+                tipo = 'robo'
+                import_block = OpennessService.verify_and_import(myproject, deviceName, r"\\AXIS-SERVER\Users\Axis Server\Documents\xmls\db_falhas.xml", repetitions= rb_blocks_value, tipo = tipo)
                 print(import_block)
 
-        if gp_import_state:
+        if gp_blocks_value > 0:
             for device in hardware:
                 deviceName = device["Name"]
-                import_block = OpennessService.verify_and_import(myproject, deviceName, r"C:\Users\gabri\Documents\PROJETOS\AX_padrao\fc_falhas - Copia.xml", repetitions=gp_blocks_value)
+                import_block = OpennessService.verify_and_import(myproject, deviceName, r"\\AXIS-SERVER\Users\Axis Server\Documents\xmls\fc_falhas.xml", repetitions=gp_blocks_value, tipo= '')
                 print(import_block)
 
         myproject.Save()

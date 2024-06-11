@@ -34,7 +34,7 @@ def CreateProject():
         for linha in InfoHardware:
             devices.append({"HardwareType": linha["combobox"].get(), "Mlfb":linha["mlfb"].get(), "Name": linha["entry"].get()})   
         label_status.config(text="Criando projeto...")
-        OpennessController.create_project(project_dir, project_name, devices, rb_blocks_value, rb_import_state, gp_blocks_value, gp_import_state)
+        OpennessController.create_project(project_dir, project_name, devices, rb_blocks_value, gp_blocks_value)
     
     else:
         label_status.config(text="Erro: Nome do projeto ou diretório não informados")
@@ -302,11 +302,11 @@ def import_blocks_screen():
     add_elements_to_frame(frame_blocks)
 
     # Botão para salvar configurações e fechar a janela
-    save_btn = tk.Button(import_config_frame, text="Salvar Configurações", command=lambda: save_config(entrada1rb, rb_import_var, entrada2gp, gp_import_var, import_config_frame))
+    save_btn = tk.Button(import_config_frame, text="Salvar Configurações", command=lambda: save_config(entrada1rb, entrada2gp, import_config_frame))
     save_btn.pack(pady=20)
 
 def add_elements_to_frame(frame):
-    global entrada1rb, rb_import_var, entrada2gp, gp_import_var
+    global entrada1rb, entrada2gp
     
     # Bloco do robô
     InstructionBlocks = tk.Label(frame, text="Quantidade de blocos do robô deseja importar?")
@@ -316,9 +316,6 @@ def add_elements_to_frame(frame):
     entrada1rb.insert(0, rb_blocks_value)  # Inserir o valor armazenado
     entrada1rb.grid(row=0, column=1, padx=2, pady=2)
 
-    rb_import_var = tk.IntVar(value=rb_import_state)  # Usar o estado armazenado
-    BtnRB = tk.Checkbutton(frame, text="Importar bloco do robô", variable=rb_import_var)
-    BtnRB.grid(row=0, column=2, padx=5, pady=5, sticky='w')
 
     # Bloco do grampo
     InstructionBlocks1 = tk.Label(frame, text="Quantidade de blocos do grampo deseja importar?")
@@ -328,23 +325,18 @@ def add_elements_to_frame(frame):
     entrada2gp.insert(0, gp_blocks_value)  # Inserir o valor armazenado
     entrada2gp.grid(row=1, column=1, padx=2, pady=2)
 
-    gp_import_var = tk.IntVar(value=gp_import_state)  # Usar o estado armazenado
-    BtnGP = tk.Checkbutton(frame, text="Importar bloco do grampo", variable=gp_import_var)
-    BtnGP.grid(row=1, column=2, padx=5, pady=5, sticky='w')
 
-def save_config(entrada1rb, rb_import_var, entrada2gp, gp_import_var, window):
-    global rb_blocks_value, rb_import_state, gp_blocks_value, gp_import_state
+def save_config(entrada1rb, entrada2gp, window):
+    global rb_blocks_value, gp_blocks_value
     
     # Atualizar as variáveis globais com os valores atuais
     rb_blocks_value = int(entrada1rb.get())
-    rb_import_state = rb_import_var.get()
     gp_blocks_value = int(entrada2gp.get())
-    gp_import_state = gp_import_var.get()
     
     # Aqui você pode salvar esses dados em um arquivo, banco de dados, etc.
     with open("config_blocos.txt", "w") as file:
-        file.write(f"Robô - Quantidade: {rb_blocks_value}, Importar: {'Sim' if rb_import_state else 'Não'}\n")
-        file.write(f"Grampo - Quantidade: {gp_blocks_value}, Importar: {'Sim' if gp_import_state else 'Não'}\n")
+        file.write(f"Robô - Quantidade: {rb_blocks_value}\n")
+        file.write(f"Grampo - Quantidade: {gp_blocks_value}\n")
 
     print("Configurações salvas com sucesso!")
     
