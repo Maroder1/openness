@@ -119,16 +119,19 @@ def get_service(tipo, parent):
         RPA_status = 'Error getting service: ', e
         print(RPA_status)
         
-def get_software_container(parent):
+def get_software(parent):
     try:
         software_container = get_service(hwf.SoftwareContainer, parent)
         if not software_container:
             raise Exception("No SoftwareContainer found for device.")
         else:
-            return software_container
+            plc_software = software_container.Software
+            if not plc_software:
+                raise Exception("No PLC software found for device.")
+            return software_container.Software
     except Exception as e:
         RPA_status = 'Error getting software container: ', e
-        print(RPA_status)    
+        print(RPA_status)
         
 def get_network_interface_CPU(deviceComposition):
     cpu = getCompositionPosition(deviceComposition)[1].DeviceItems
@@ -312,14 +315,7 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0):
 
         # Acessar o serviço SoftwareContainer do item do dispositivo
         parent = device.DeviceItems[1]
-        software_container = get_software_container(parent)
-
-        # Acessar o software PLC do contêiner de software
-        plc_software = software_container.Software
-        
-        if not plc_software:
-            print(f"No PLC software found for device {device_name}.")
-            return
+        plc_software = get_software(parent)
 
         # Extrair nome e número base do XML
         nome_base, numero_base = extrair_nome_numero(file_path)
