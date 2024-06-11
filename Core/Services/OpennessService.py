@@ -296,7 +296,8 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0):
             return
 
         # Acessar o serviço SoftwareContainer do item do dispositivo
-        software_container = device.DeviceItems[1].GetService[hwf.SoftwareContainer]()
+        parent = device.DeviceItems[1]
+        software_container = get_service(hwf.SoftwareContainer, parent)
         
         if not software_container:
             print(f"No SoftwareContainer found for device {device_name}.")
