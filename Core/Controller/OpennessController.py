@@ -1,12 +1,12 @@
-import os
 from Services import OpennessService
 import traceback
 from System.IO import FileInfo # type: ignore
+import tkinter as tk
 
 RPA_status = ""
 hardwareList = []
 
-def create_project(project_path, project_name, hardware):
+def create_project(project_path, project_name, hardware, rb_blocks_value, rb_import_state, gp_blocks_value, gp_import_state):
 
     project_dir = OpennessService.get_directory_info(project_path)
     
@@ -49,11 +49,18 @@ def create_project(project_path, project_name, hardware):
         
         myproject.Save()
 
-        # Import blocks to the device
-        for device in hardware:
-            deviceName = device["Name"]
-            import_block = OpennessService.verify_and_import(myproject, deviceName, r"C:\Users\gabri\Documents\PROJETOS\AX_padrao\db_falhar - Copia.xml", repetitions=3)
-            print(import_block)
+        if rb_import_state: 
+            for device in hardware:
+                deviceName = device["Name"]
+                import_block = OpennessService.verify_and_import(myproject, deviceName, r"C:\Users\gabri\Documents\PROJETOS\AX_padrao\db_falhar - Copia.xml", repetitions= rb_blocks_value)
+                print(import_block)
+
+        if gp_import_state:
+            for device in hardware:
+                deviceName = device["Name"]
+                import_block = OpennessService.verify_and_import(myproject, deviceName, r"C:\Users\gabri\Documents\PROJETOS\AX_padrao\fc_falhas - Copia.xml", repetitions=gp_blocks_value)
+                print(import_block)
+
         myproject.Save()
         
         RPA_status = 'Project created successfully!'
