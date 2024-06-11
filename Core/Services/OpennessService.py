@@ -108,24 +108,25 @@ def GetAllProfinetInterfaces(myproject):
         
 def getCompositionPosition(deviceComposition):
     return deviceComposition.DeviceItems
+
+def get_service(tipo, parent):
+    network_interface_type = tipo
+    getServiceMethod = parent.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
+    return getServiceMethod.Invoke(parent, None)
         
 def get_network_interface_CPU(deviceComposition):
     cpu = getCompositionPosition(deviceComposition)[1].DeviceItems
     for option in cpu:
         optionName = option.GetAttribute("Name")
         if optionName == "PROFINET interface_1":
-            network_interface_type = hwf.NetworkInterface
-            getServiceMethod = option.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
-            return getServiceMethod.Invoke(option, None)
+            return get_service(hwf.NetworkInterface, option)
             
 def get_network_interface_HMI(deviceComposition):
     hmi = getCompositionPosition(deviceComposition)[1].DeviceItems
     for option in hmi:
         optionName = option.GetAttribute("Name")
         if optionName == "PROFINET Interface_1":
-            network_interface_type = hwf.NetworkInterface
-            getServiceMethod = option.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
-            return getServiceMethod.Invoke(option, None)
+            return get_service(hwf.NetworkInterface, option)
         
 def is_gsd(device):
     try:
