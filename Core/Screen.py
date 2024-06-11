@@ -1,13 +1,13 @@
 import sys
 sys.coinit_flags = 2
-import pywinauto
 import tkinter as tk
 from tkinter import filedialog, ttk 
+from PIL import Image, ImageTk
 
 from repositories import UserConfig
 from repositories import MlfbManagement
 from Controller.OpennessController import open_project, export_Block
-
+from Services.OpennessService import add_DLL
 import Controller.OpennessController as OpennessController
 
 # Criando a janela principal
@@ -17,14 +17,15 @@ root.title("RPA Tia Openness")
 
 # Variavel no nome do projeto
 project_name_var=tk.StringVar()
+quant_rb_import=tk.IntVar()
+quant_gp_import=tk.IntVar()
 
 
 ############### FUNCTIONS ################
-
 def CreateProject():
     project_name = project_name_var.get()
-    
-    if not UserConfig.CheckDll(151):
+    global selected_version
+    if not UserConfig.CheckDll(selected_version):
         label_status.config(text="Erro: Dll não configurada para esta versão do TIA")
         return
     
@@ -38,7 +39,7 @@ def CreateProject():
     else:
         label_status.config(text="Erro: Nome do projeto ou diretório não informados")
         
-def opn_project():
+def open_project():
     project_path = open_file_dialog()
     if project_path != None and project_path != '':
         RAP_status_Tela = "Abrindo projeto..."
@@ -50,6 +51,7 @@ def opn_project():
 def open_directory_dialog():
     global project_dir
     project_dir = filedialog.askdirectory()
+    print(f'Selecionou o diretório: {project_dir}')
     
 def open_file_dialog():
     return filedialog.askopenfilename()
@@ -125,7 +127,7 @@ RAP_status_Tela = "Idle"
 screen_instance = False
 screen_frames = []
 opcoes_Hardware = ["PLC", "HMI", "IO Node"]
-
+selected_version = None
 mlfb_Plc = []
 mlfb_ihm = []
 mlfb_npde = []
@@ -177,11 +179,11 @@ def main_screen():
         criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
         # Button para abrir projeto
-        criarBtn = tk.Button(proj_config_frame, text="Abrir projeto", command=opn_project)
+        criarBtn = tk.Button(proj_config_frame, text="Abrir projeto", command=open_project)
         criarBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
         # Button para exportar bloco
-        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=export_Block)
+        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=import_blocks_screen)
         criarBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
 
@@ -201,8 +203,38 @@ def main_screen():
         label_status = tk.Label(root, text="Nome do projeto: " + RAP_status_Tela)
         label_status.pack(padx=5, pady=5)
 
-        root.mainloop()
+        # Carregar a imagem
+        img = Image.open("Core\\repositories\\logo.jpg")
+        img = img.resize((100, 100), Image.ANTIALIAS)  # Redimensionar a imagem conforme necessário
+        img = ImageTk.PhotoImage(img)
         
+        # Exibir a imagem
+        label_image = tk.Label(root, image=img)
+        label_image.image = img  # Mantém uma referência para evitar a coleta de lixo
+        label_image.place(x=root.winfo_width() - 100, y=0)  # Posiciona no canto superior direito
+
+        root.mainloop()
+def set_version(version_select):
+    global selected_version 
+    if version_select == 151:
+        selected_version = 151
+        print("151")
+    elif version_select == 16:
+        selected_version = 16
+        print("16")
+    elif version_select == 17:
+        selected_version = 17
+        print("17")
+    else:
+        print("Versão não reconhecida.")
+        return None
+    
+    if add_DLL(selected_version):
+        print(f"Versão {selected_version} configurada com sucesso.")
+    else:
+        print(f"Falha ao configurar a versão {selected_version}.")
+    return selected_version
+
 def user_config_screen():
     usr_config_screen = tk.Toplevel(root)
     usr_config_screen.title("Configurações do usuário")
@@ -216,36 +248,26 @@ def user_config_screen():
     
     dll_config_frame = ttk.Frame(usr_config_screen)
     
-    InstructionsDllPath = tk.Label(dll_config_frame, text="Indique o caminho das dlls:")
+    InstructionsDllPath = tk.Label(dll_config_frame, text="Selecione a versão do TIA Portal:")
     InstructionsDllPath.grid(row=0, column=0, padx=5, pady=5)
 
     dll_matrix = []
     
     def setDllTuple(Tia_Version):
-        
         info_dll = {"Tia_Version": Tia_Version, "Path": open_file_dialog()}
         dll_matrix.append(info_dll)
     
     # Tia V15.1
-    label151 = tk.Label(dll_config_frame, text="Tia V15.1:")
-    label151.grid(row=1, column=0, padx=5, pady=5)
-    
-    Btn151 = tk.Button(dll_config_frame, command=lambda: setDllTuple(151), width=10)
-    Btn151.grid(row=1, column=1, padx=5, pady=5)    
+    Btn151 = tk.Button(dll_config_frame, command=lambda: set_version(151), width=10, text="Tia V15.1")
+    Btn151.grid(row=1, column=0, padx=5, pady=5)    
     
     # Tia V16
-    label16 = tk.Label(dll_config_frame, text="Tia V16:")
-    label16.grid(row=2, column=0, padx=5, pady=5)
-    
-    Btn16 = tk.Button(dll_config_frame, command=lambda: setDllTuple(16), width=10)
-    Btn16.grid(row=2, column=1, padx=5, pady=5)
+    Btn16 = tk.Button(dll_config_frame, command=lambda: set_version(16), width=10, text="Tia V16")
+    Btn16.grid(row=2, column=0, padx=5, pady=5)
     
     # Tia V17
-    label17 = tk.Label(dll_config_frame, text="Tia V17:")
-    label17.grid(row=3, column=0, padx=5, pady=5)
-    
-    Btn17 = tk.Button(dll_config_frame, command=lambda: setDllTuple(17), width=10)
-    Btn17.grid(row=3, column=1, padx=5, pady=5,)
+    Btn17 = tk.Button(dll_config_frame, command=lambda: set_version(17), width=10, text="Tia V17")
+    Btn17.grid(row=3, column=0, padx=5, pady=5,)
     
     dll_config_frame.pack(padx=5, pady=5)
     
@@ -254,6 +276,44 @@ def user_config_screen():
     
     fechar_botao = tk.Button(usr_config_screen, text="Fechar", command=usr_config_screen.destroy)
     fechar_botao.pack()
+
+def import_blocks_screen():
+    import_config_frame = tk.Toplevel(root)
+    import_config_frame.title("Configurações dos blocos")
+    import_config_frame.geometry("600x200")
+
+    import_config_frame.transient(root)
+    import_config_frame.grab_set()
+    
+    nova_label = tk.Label(import_config_frame, text="Aqui você pode selecionar os blocos que deseja importar")
+    nova_label.pack(pady=10)
+    
+    frame_blocks = tk.Frame(import_config_frame)
+    frame_blocks.pack(pady=10)
+
+    # Bloco do robo
+    InstructionBlocks = tk.Label(frame_blocks, text="Quantidade de blocos do robo deseja importar?")
+    InstructionBlocks.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    entrada1 = tk.Entry(frame_blocks, textvariable=quant_rb_import)
+    entrada1.grid(row=0, column=1, padx=2, pady=2)
+
+    BtnRB = tk.Checkbutton(frame_blocks, text="Importar bloco do robo")
+    BtnRB.grid(row=0, column=2, padx=5, pady=5, sticky='w')
+
+    # Bloco do grampo
+    InstructionBlocks1 = tk.Label(frame_blocks, text="Quantidade de blocos do grampo deseja importar?")
+    InstructionBlocks1.grid(row=1, column=0, padx=5, pady=5, sticky='w')
+
+    entrada2 = tk.Entry(frame_blocks, textvariable=quant_gp_import)
+    entrada2.grid(row=1, column=1, padx=2, pady=2)
+
+    BtnGP = tk.Checkbutton(frame_blocks, text="Importar bloco do grampo")
+    BtnGP.grid(row=1, column=2, padx=5, pady=5, sticky='w')
+
+    fechar_botao = tk.Button(import_config_frame, text="Fechar", command=import_config_frame.destroy)
+    fechar_botao.pack(pady=20)
+
         
 ############### RENDER ################
 main_screen()
