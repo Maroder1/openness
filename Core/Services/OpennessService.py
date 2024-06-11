@@ -111,9 +111,13 @@ def getCompositionPosition(deviceComposition):
     return deviceComposition.DeviceItems
 
 def get_service(tipo, parent):
-    network_interface_type = tipo
-    getServiceMethod = parent.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
-    return getServiceMethod.Invoke(parent, None)
+    try:
+        network_interface_type = tipo
+        getServiceMethod = parent.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
+        return getServiceMethod.Invoke(parent, None)
+    except Exception as e:
+        RPA_status = 'Error getting service: ', e
+        print(RPA_status)
         
 def get_network_interface_CPU(deviceComposition):
     cpu = getCompositionPosition(deviceComposition)[1].DeviceItems
