@@ -204,14 +204,8 @@ def main_screen():
         label_status.pack(padx=5, pady=5)
 
         # Carregar a imagem
-        img = Image.open("Core\\repositories\\logo.jpg")
-        img = img.resize((100, 100), Image.ANTIALIAS)  # Redimensionar a imagem conforme necessário
-        img = ImageTk.PhotoImage(img)
-        
-        # Exibir a imagem
-        label_image = tk.Label(root, image=img)
-        label_image.image = img  # Mantém uma referência para evitar a coleta de lixo
-        label_image.place(x=root.winfo_width() - 100, y=0)  # Posiciona no canto superior direito
+        load_image(root, r".\logo.PNG")
+
 
         root.mainloop()
 def set_version(version_select):
@@ -277,6 +271,10 @@ def user_config_screen():
     fechar_botao = tk.Button(usr_config_screen, text="Fechar", command=usr_config_screen.destroy)
     fechar_botao.pack()
 
+   # Carregar a imagem
+    load_image(usr_config_screen, r".\logo.PNG")
+
+
 def import_blocks_screen():
     import_config_frame = tk.Toplevel(root)
     import_config_frame.title("Configurações dos blocos")
@@ -314,6 +312,23 @@ def import_blocks_screen():
     fechar_botao = tk.Button(import_config_frame, text="Fechar", command=import_config_frame.destroy)
     fechar_botao.pack(pady=20)
 
+
+def load_image(window, image_path):
+    # Carregar a imagem
+    img = Image.open(image_path)
+    img = img.resize((125, 100))  # Redimensionar a imagem conforme necessário
+    img = ImageTk.PhotoImage(img)
+        
+    # Exibir a imagem
+    label_image = tk.Label(window, image=img)
+    label_image.image = img  # Mantém uma referência para evitar a coleta de lixo
+    label_image.place(x=window.winfo_width() - img.width(), y=0)
+
+    # Atualizar a posição da imagem quando a largura da janela mudar
+    def update_image_position(event):
+        label_image.place(x=window.winfo_width() - img.width(), y=0)
+
+    window.bind("<Configure>", update_image_position)
         
 ############### RENDER ################
 main_screen()
