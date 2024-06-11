@@ -52,7 +52,7 @@ def create_project(project_path, project_name, hardware):
         # Import blocks to the device
         for device in hardware:
             deviceName = device["Name"]
-            import_block = OpennessService.verify_and_import(myproject, deviceName, r"C:\Users\gabri\Documents\PROJETOS\AX_padrao\db_falhar - Copia.txt", repetitions=3)
+            import_block = OpennessService.verify_and_import(myproject, deviceName, r"C:\Users\gabri\Documents\PROJETOS\AX_padrao\db_falhar - Copia.xml", repetitions=3)
             print(import_block)
         myproject.Save()
         

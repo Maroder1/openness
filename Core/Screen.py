@@ -183,7 +183,7 @@ def main_screen():
         criarBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
         # Button para exportar bloco
-        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=import_blocks_screen)
+        criarBtn = tk.Button(proj_config_frame, text="Import Blocks", command=import_blocks_screen)
         criarBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
 
@@ -293,24 +293,24 @@ def import_blocks_screen():
     InstructionBlocks = tk.Label(frame_blocks, text="Quantidade de blocos do robo deseja importar?")
     InstructionBlocks.grid(row=0, column=0, padx=5, pady=5, sticky='w')
 
-    entrada1 = tk.Entry(frame_blocks, textvariable=quant_rb_import)
+    entrada1 = tk.Entry(frame_blocks)
     entrada1.grid(row=0, column=1, padx=2, pady=2)
 
-    BtnRB = tk.Checkbutton(frame_blocks, text="Importar bloco do robo")
+    rb_import_var = tk.IntVar()
+    BtnRB = tk.Checkbutton(frame_blocks, text="Importar bloco do robo", variable=rb_import_var)
     BtnRB.grid(row=0, column=2, padx=5, pady=5, sticky='w')
 
     # Bloco do grampo
     InstructionBlocks1 = tk.Label(frame_blocks, text="Quantidade de blocos do grampo deseja importar?")
     InstructionBlocks1.grid(row=1, column=0, padx=5, pady=5, sticky='w')
 
-    entrada2 = tk.Entry(frame_blocks, textvariable=quant_gp_import)
+    entrada2 = tk.Entry(frame_blocks)
     entrada2.grid(row=1, column=1, padx=2, pady=2)
 
-    BtnGP = tk.Checkbutton(frame_blocks, text="Importar bloco do grampo")
+    gp_import_var = tk.IntVar()
+    BtnGP = tk.Checkbutton(frame_blocks, text="Importar bloco do grampo", variable=gp_import_var)
     BtnGP.grid(row=1, column=2, padx=5, pady=5, sticky='w')
 
-    fechar_botao = tk.Button(import_config_frame, text="Fechar", command=import_config_frame.destroy)
-    fechar_botao.pack(pady=20)
 
 
 def load_image(window, image_path):

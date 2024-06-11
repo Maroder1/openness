@@ -3,8 +3,7 @@ import clr
 from System.IO import DirectoryInfo, FileInfo  # type: ignore
 from System import Type # type: ignore
 from repositories import UserConfig
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
+import re
 
 
 
@@ -207,83 +206,16 @@ def export_Fb(PlcSoftware):
 #(TiaPortal.Projects[0].Devices[0].DeviceItems[1].GetService<SoftwareContainer>().Software as PlcSoftware).BlockGroup.Blocks
 
 # Função para alterar o nome e número no XML
-def alterar_xml(arquivo_xml, novo_nome, novo_numero):
-    try:
-        # Parsing do XML
-        tree = ET.parse(arquivo_xml)
-        root = tree.getroot()
+def editar_tags_xml(arquivo, novo_nome, novo_numero):
+    with open(arquivo, 'r', encoding='utf-8') as file:
+        conteudo = file.read()
 
-        # Encontrar e modificar elementos Name e Number dentro das tags de rastros
-        for trace in root.findall(".//Trace"):
-            for item in trace:
-                if 'Name' in item.tag:
-                    if item.text == "0073_Falhas":
-                        print(f"Changing Name from {item.text} to {novo_nome}")
-                        item.text = novo_nome
-                elif 'Number' in item.tag:
-                    if item.text == "73":
-                        print(f"Changing Number from {item.text} to {novo_numero}")
-                        item.text = str(novo_numero)
-
-        # Salvando o arquivo XML modificado com formatação
-        tree.write(arquivo_xml, encoding='utf-8', xml_declaration=True)
-
-        print(f"XML saved with new Name and Number: {novo_nome}, {novo_numero}")
-
-    except ET.ParseError as e:
-        print(f"Error parsing XML file: {e}")
-    except Exception as e:
-        print(f"Unexpected error while modifying XML: {e}")
-        
-def extrair_nome_numero(arquivo_xml):
-    try:
-        tree = ET.parse(arquivo_xml)
-        root = tree.getroot()
-
-        # Remover namespace do root
-        for elem in root.iter():
-            elem.tag = elem.tag.split('}', 1)[-1]
-
-        # Encontrar elementos Name e Number
-        name_element = root.find('.//Name')
-        number_element = root.find('.//Number')
-
-        nome_base = name_element.text if name_element is not None else ""
-        numero_base = int(number_element.text) if number_element is not None else 0
-
-        return nome_base, numero_base
-
-    except ET.ParseError as e:
-        print(f"Error parsing XML file: {e}")
-        return "", 0
-    except Exception as e:
-        print(f"Unexpected error while extracting from XML: {e}")
-        return "", 0
-
-def analisar_xml(arquivo_xml):
-    try:
-        tree = ET.parse(arquivo_xml)
-        root = tree.getroot()
-
-        # Remover namespace do root
-        for elem in root.iter():
-            elem.tag = elem.tag.split('}', 1)[-1]
-
-        # Encontrar elementos Name e Number
-        name_element = root.find('.//Name')
-        number_element = root.find('.//Number')
-
-        nome = name_element.text if name_element is not None else "Name element not found"
-        numero = number_element.text if number_element is not None else "Number element not found"
-
-        return nome, numero
-
-    except ET.ParseError as e:
-        print(f"Error parsing XML file: {e}")
-        return None, None
-    except Exception as e:
-        print(f"Unexpected error while analyzing XML: {e}")
-        return None, None
+    # Substituir o texto nas tags <Name> e <Number>
+    conteudo = re.sub(r'(?<=<Name>)[^<]+(?=</Name>)', novo_nome, conteudo)
+    conteudo = re.sub(r'(?<=<Number>)[^<]+(?=</Number>)', str(novo_numero), conteudo)
+    
+    with open(arquivo, 'w', encoding='utf-8') as file:
+        file.write(conteudo)
 
 def verify_and_import(myproject, device_name, file_path, repetitions=0):
     try:
@@ -309,7 +241,8 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0):
             return
 
         # Extrair nome e número base do XML
-        nome_base, numero_base = extrair_nome_numero(file_path)
+        nome_base = "0070_Falhas"
+        numero_base = 70
 
         if not nome_base or not numero_base:
             print("Failed to extract base name or number from XML.")
@@ -335,7 +268,7 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0):
             novo_numero = numero_base + i + 1
             
             # Chamar a função para modificar o XML
-            alterar_xml(file_path, novo_nome, novo_numero)
+            editar_tags_xml(file_path, novo_nome, novo_numero)
 
             # Realizar a importação após modificar o XML
             import_blocks()
