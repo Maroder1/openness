@@ -35,6 +35,14 @@ def open_tia_ui():
     # Create an instance of Tia Portal
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
 
+def compilate_device(device):
+    try:
+        RPA_status = "Compiling something..."
+        print(RPA_status)
+        get_service(comp.ICompilable, device).Compile()
+    except Exception as e:
+        print('Error compiling device:', e)
+
 def configurePath(path):
     return path.replace("/", "\\")
 
@@ -60,13 +68,15 @@ def addHardware(deviceType, deviceName, deviceMlfb, myproject):
         if deviceType == "PLC":
             print('Creating CPU: ', deviceName)
             config_Plc = "OrderNumber:"+deviceMlfb+"/V1.6"
-            return myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
+            deviceCPU = myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
+            return deviceCPU
             
         elif deviceType == "HMI":
             RPA_status = 'Creating HMI: ', deviceName
             print(RPA_status)
             config_Hmi = 'OrderNumber:6AV2 124-0GC01-0AX0/15.1.0.0'
-            return myproject.Devices.CreateWithItem(config_Hmi, deviceName, None)
+            deviceHMI =  myproject.Devices.CreateWithItem(config_Hmi, deviceName, None)
+            return deviceHMI
 
         elif deviceType == "IO Node":
             RPA_status = 'Creating IO Node: ', deviceName
@@ -90,7 +100,7 @@ def GetAllProfinetInterfaces(myproject):
                 hardware_type = getHardwareType(device)
                 
                 if (hardware_type == "CPU"):
-                    get_type_group(device)
+                    get_types(device)
                     network_interface_cpu = get_network_interface_CPU(device)
                     network_ports.append(network_interface_cpu)
                     
@@ -99,7 +109,7 @@ def GetAllProfinetInterfaces(myproject):
                     network_ports.append(network_interface_ihm)
                     
             else:
-                RPA_status = 'Device' + device.GetAttribute("Name") + ' is GSD: '
+                RPA_status = 'Device' + str(device.GetAttribute("Name")) + ' is GSD: '
                 print(RPA_status)
                 
         return network_ports
@@ -134,7 +144,7 @@ def get_software(parent):
     except Exception as e:
         RPA_status = 'Error getting software container: ', e
         print(RPA_status)
-        print("Name: ", parent.GetAttribute("Name"))
+        print("Name: ", str(parent.GetAttribute("Name")))
         print("Type: ", parent.GetType())
         
 def get_network_interface_CPU(deviceComposition):
@@ -355,16 +365,31 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0):
     except Exception as e:
         print('Error verifying or importing file:', e)
         
-def get_type_group(cpu):
+def get_types(cpu):
     plc_software = get_software(cpu)
-    return plc_software.TypeGroup
+    type_group = plc_software.TypeGroup
+    return type_group.Types 
 
 def import_data_type(cpu, data_type_path):
     try:
-        type_group = get_type_group(cpu)
-        types = type_group.Types
+        types = get_types(cpu)
         data_type_path = get_directory_info(data_type_path)
         
         types.Import(data_type_path, None, None)
     except Exception as e:
         print('Error importing data type:', e)
+    
+def export_data_type(cpu, data_type_name, data_type_path):
+    try:
+        types = get_types(cpu)
+        data_type_path = get_directory_info(data_type_path)
+        
+        data_type = types.Find(str(data_type_name))
+        
+        if data_type.GetAttribute("IsConsistent") == False:
+            print("Data type is not consistent")
+            compilate_device(cpu)
+        
+        types.Export(data_type, data_type_path, None)
+    except Exception as e:
+        print('Error exporting data type:', e)	
