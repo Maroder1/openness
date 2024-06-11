@@ -203,8 +203,8 @@ def main_screen():
         label_status = tk.Label(root, text="Nome do projeto: " + RAP_status_Tela)
         label_status.pack(padx=5, pady=5)
 
-# Carregar a imagem
-        img = Image.open("caminho_para_sua_imagem.png")
+        # Carregar a imagem
+        img = Image.open("Core\\repositories\\logo.jpg")
         img = img.resize((100, 100), Image.ANTIALIAS)  # Redimensionar a imagem conforme necessário
         img = ImageTk.PhotoImage(img)
         
