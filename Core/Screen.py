@@ -203,15 +203,15 @@ def main_screen():
         label_status = tk.Label(root, text="Nome do projeto: " + RAP_status_Tela)
         label_status.pack(padx=5, pady=5)
 
-        # Carregar a imagem
-        img = Image.open("Core\\repositories\\logo.jpg")
-        img = img.resize((100, 100), Image.ANTIALIAS)  # Redimensionar a imagem conforme necessário
-        img = ImageTk.PhotoImage(img)
+        # # Carregar a imagem
+        # img = Image.open("Core\\repositories\\logo.jpg")
+        # img = img.resize((100, 100), Image.ANTIALIAS)  # Redimensionar a imagem conforme necessário
+        # img = ImageTk.PhotoImage(img)
         
-        # Exibir a imagem
-        label_image = tk.Label(root, image=img)
-        label_image.image = img  # Mantém uma referência para evitar a coleta de lixo
-        label_image.place(x=root.winfo_width() - 100, y=0)  # Posiciona no canto superior direito
+        # # Exibir a imagem
+        # label_image = tk.Label(root, image=img)
+        # label_image.image = img  # Mantém uma referência para evitar a coleta de lixo
+        # label_image.place(x=root.winfo_width() - 100, y=0)  # Posiciona no canto superior direito
 
         root.mainloop()
 def set_version(version_select):

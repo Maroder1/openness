@@ -85,11 +85,12 @@ def GetAllProfinetInterfaces(myproject):
     print(RPA_status)
     try:
         network_ports = []
-        for device in myproject.Devices:
+        for device in myproject.Devices:            
             if (not is_gsd(device)):
                 hardware_type = getHardwareType(device)
                 
                 if (hardware_type == "CPU"):
+                    get_type_group(device)
                     network_interface_cpu = get_network_interface_CPU(device)
                     network_ports.append(network_interface_cpu)
                     
@@ -121,6 +122,7 @@ def get_service(tipo, parent):
         
 def get_software(parent):
     try:
+        parent = parent.DeviceItems[1]
         software_container = get_service(hwf.SoftwareContainer, parent)
         if not software_container:
             raise Exception("No SoftwareContainer found for device.")
@@ -132,6 +134,8 @@ def get_software(parent):
     except Exception as e:
         RPA_status = 'Error getting software container: ', e
         print(RPA_status)
+        print("Name: ", parent.GetAttribute("Name"))
+        print("Type: ", parent.GetType())
         
 def get_network_interface_CPU(deviceComposition):
     cpu = getCompositionPosition(deviceComposition)[1].DeviceItems
@@ -314,8 +318,7 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0):
             return
 
         # Acessar o serviço SoftwareContainer do item do dispositivo
-        parent = device.DeviceItems[1]
-        plc_software = get_software(parent)
+        plc_software = get_software(device)
 
         # Extrair nome e número base do XML
         nome_base, numero_base = extrair_nome_numero(file_path)
@@ -351,3 +354,17 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0):
 
     except Exception as e:
         print('Error verifying or importing file:', e)
+        
+def get_type_group(cpu):
+    plc_software = get_software(cpu)
+    return plc_software.TypeGroup
+
+def import_data_type(cpu, data_type_path):
+    try:
+        type_group = get_type_group(cpu)
+        types = type_group.Types
+        data_type_path = get_directory_info(data_type_path)
+        
+        types.Import(data_type_path, None, None)
+    except Exception as e:
+        print('Error importing data type:', e)
