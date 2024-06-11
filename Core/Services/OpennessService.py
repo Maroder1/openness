@@ -31,6 +31,7 @@ def add_DLL(tia_Version):
     except Exception as e:
         print("Error adding DLL reference: ", e)
         return False
+    
 def open_tia_ui():
     # Create an instance of Tia Portal
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
@@ -42,7 +43,16 @@ def compilate_device(device):
         get_service(comp.ICompilable, device).Compile()
     except Exception as e:
         print('Error compiling device:', e)
-
+        
+def get_all_devices(myproject):
+    try:
+        devices = []
+        for device in myproject.Devices:
+            devices.append(device)
+        return devices
+    except Exception as e:
+        print('Error getting all devices:', e)
+        
 def configurePath(path):
     return path.replace("/", "\\")
 
@@ -384,12 +394,16 @@ def export_data_type(cpu, data_type_name, data_type_path):
         types = get_types(cpu)
         data_type_path = get_directory_info(data_type_path)
         
-        data_type = types.Find(str(data_type_name))
-        
-        if data_type.GetAttribute("IsConsistent") == False:
+        data_type = types.Find(data_type_name)
+        if data_type is None:
+            print("Data type not found")
+            print(types.GetType())
+            return
+        elif data_type.GetAttribute("IsConsistent") == False:
+            print("Type: ", data_type.GetType())
             print("Data type is not consistent")
             compilate_device(cpu)
         
-        types.Export(data_type, data_type_path, None)
+        data_type.Export(data_type_path, tia.ExportOptions.WithDefaults)
     except Exception as e:
-        print('Error exporting data type:', e)	
+        print('Error exporting data type while in service:', e)	

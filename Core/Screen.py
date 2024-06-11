@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 
 from repositories import UserConfig
 from repositories import MlfbManagement
-from Controller.OpennessController import open_project, export_Block
+from Controller.OpennessController import open_project, export_Block, export_data_type
 from Services.OpennessService import add_DLL
 import Controller.OpennessController as OpennessController
 
@@ -39,19 +39,15 @@ def CreateProject():
     else:
         label_status.config(text="Erro: Nome do projeto ou diretório não informados")
         
-def open_project():
+def opn_project():
     project_path = open_file_dialog()
     if project_path != None and project_path != '':
-        RAP_status_Tela = "Abrindo projeto..."
-        print(RAP_status_Tela)
         open_project(project_path)
     else:
         label_status.config(text="Erro: Projeto não selecionado")
 
 def open_directory_dialog():
-    global project_dir
-    project_dir = filedialog.askdirectory()
-    print(f'Selecionou o diretório: {project_dir}')
+    return filedialog.askdirectory()
     
 def open_file_dialog():
     return filedialog.askopenfilename()
@@ -119,8 +115,6 @@ def slice_tupla(string):
         return string
         
 ############### VARIABLES ################
-
-project_dir = None
 NHardware = 0
 InfoHardware = []
 RAP_status_Tela = "Idle"
@@ -179,13 +173,16 @@ def main_screen():
         criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
         # Button para abrir projeto
-        criarBtn = tk.Button(proj_config_frame, text="Abrir projeto", command=open_project)
-        criarBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+        openBtn = tk.Button(proj_config_frame, text="Abrir projeto", command=opn_project)
+        openBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
         # Button para exportar bloco
-        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=import_blocks_screen)
-        criarBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
+        exportBkBtn = tk.Button(proj_config_frame, text="Export Blocks", command=import_blocks_screen)
+        exportBkBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
+        # Button para exportar udt
+        exportDtBtn = tk.Button(proj_config_frame, text="Export Data Type", command=export_data_type_screen)
+        exportDtBtn.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
 
         proj_config_frame.pack()
 
@@ -276,11 +273,35 @@ def user_config_screen():
     
     fechar_botao = tk.Button(usr_config_screen, text="Fechar", command=usr_config_screen.destroy)
     fechar_botao.pack()
+    
+def export_data_type_screen():
+    data_type_config_screen = tk.Toplevel(root)
+    data_type_config_screen.title("Configurações do usuário")
+    data_type_config_screen.geometry("540x360")
+    
+    data_type_config_screen.transient(root)
+    data_type_config_screen.grab_set()
+    
+    frame_dt = tk.Frame(data_type_config_screen)
+    frame_dt.pack(pady=10)
+    
+    InstructionBlocks = tk.Label(frame_dt, text="Qual data type deseja exportar?")
+    InstructionBlocks.grid(row=0, column=0, padx=5, pady=5,)
+    
+    nome_dt = tk.Entry(frame_dt, textvariable=quant_rb_import)
+    nome_dt.grid(row=0, column=1, padx=5, pady=5)
+    
+    export_dt = tk.Button(frame_dt, text="Exportar", command=call_export_dt)
+    export_dt.grid(row=1, column=1, columnspan=2 ,padx=5, pady=5)
+    
+def call_export_dt():
+    project_dir = open_directory_dialog()
+    export_data_type(None, None, project_dir)
 
 def import_blocks_screen():
     import_config_frame = tk.Toplevel(root)
     import_config_frame.title("Configurações dos blocos")
-    import_config_frame.geometry("600x200")
+    import_config_frame.geometry("540x360")
 
     import_config_frame.transient(root)
     import_config_frame.grab_set()
