@@ -2,6 +2,7 @@ import sys
 sys.coinit_flags = 2
 import tkinter as tk
 from tkinter import filedialog, ttk 
+from PIL import Image, ImageTk
 
 from repositories import UserConfig
 from repositories import MlfbManagement
@@ -16,6 +17,8 @@ root.title("RPA Tia Openness")
 
 # Variavel no nome do projeto
 project_name_var=tk.StringVar()
+quant_rb_import=tk.IntVar()
+quant_gp_import=tk.IntVar()
 
 
 ############### FUNCTIONS ################
@@ -180,7 +183,7 @@ def main_screen():
         criarBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
         # Button para exportar bloco
-        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=export_Block)
+        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=import_blocks_screen)
         criarBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
 
@@ -199,6 +202,16 @@ def main_screen():
         global label_status
         label_status = tk.Label(root, text="Nome do projeto: " + RAP_status_Tela)
         label_status.pack(padx=5, pady=5)
+
+# Carregar a imagem
+        img = Image.open("caminho_para_sua_imagem.png")
+        img = img.resize((100, 100), Image.ANTIALIAS)  # Redimensionar a imagem conforme necessário
+        img = ImageTk.PhotoImage(img)
+        
+        # Exibir a imagem
+        label_image = tk.Label(root, image=img)
+        label_image.image = img  # Mantém uma referência para evitar a coleta de lixo
+        label_image.place(x=root.winfo_width() - 100, y=0)  # Posiciona no canto superior direito
 
         root.mainloop()
 def set_version(version_select):
@@ -263,6 +276,44 @@ def user_config_screen():
     
     fechar_botao = tk.Button(usr_config_screen, text="Fechar", command=usr_config_screen.destroy)
     fechar_botao.pack()
+
+def import_blocks_screen():
+    import_config_frame = tk.Toplevel(root)
+    import_config_frame.title("Configurações dos blocos")
+    import_config_frame.geometry("600x200")
+
+    import_config_frame.transient(root)
+    import_config_frame.grab_set()
+    
+    nova_label = tk.Label(import_config_frame, text="Aqui você pode selecionar os blocos que deseja importar")
+    nova_label.pack(pady=10)
+    
+    frame_blocks = tk.Frame(import_config_frame)
+    frame_blocks.pack(pady=10)
+
+    # Bloco do robo
+    InstructionBlocks = tk.Label(frame_blocks, text="Quantidade de blocos do robo deseja importar?")
+    InstructionBlocks.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    entrada1 = tk.Entry(frame_blocks, textvariable=quant_rb_import)
+    entrada1.grid(row=0, column=1, padx=2, pady=2)
+
+    BtnRB = tk.Checkbutton(frame_blocks, text="Importar bloco do robo")
+    BtnRB.grid(row=0, column=2, padx=5, pady=5, sticky='w')
+
+    # Bloco do grampo
+    InstructionBlocks1 = tk.Label(frame_blocks, text="Quantidade de blocos do grampo deseja importar?")
+    InstructionBlocks1.grid(row=1, column=0, padx=5, pady=5, sticky='w')
+
+    entrada2 = tk.Entry(frame_blocks, textvariable=quant_gp_import)
+    entrada2.grid(row=1, column=1, padx=2, pady=2)
+
+    BtnGP = tk.Checkbutton(frame_blocks, text="Importar bloco do grampo")
+    BtnGP.grid(row=1, column=2, padx=5, pady=5, sticky='w')
+
+    fechar_botao = tk.Button(import_config_frame, text="Fechar", command=import_config_frame.destroy)
+    fechar_botao.pack(pady=20)
+
         
 ############### RENDER ################
 main_screen()
