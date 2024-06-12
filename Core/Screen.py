@@ -215,7 +215,7 @@ def main_screen():
         openBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
         # Button para exportar bloco
-        exportBkBtn = tk.Button(proj_config_frame, text="Export Blocks", command=import_blocks_screen)
+        exportBkBtn = tk.Button(proj_config_frame, text="Import Blocks", command=import_blocks_screen)
         exportBkBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
         # Button para exportar udt
@@ -340,7 +340,7 @@ def import_blocks_screen():
     # Criando a janela
     import_config_frame = tk.Toplevel(root)
     import_config_frame.title("Configurações dos blocos")
-    import_config_frame.geometry("540x360")
+    import_config_frame.geometry("540x200")
 
     import_config_frame.transient(root)
     import_config_frame.grab_set()
