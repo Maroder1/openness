@@ -24,12 +24,16 @@ quant_gp_import=tk.IntVar()
 ############### FUNCTIONS ################
 def CreateProject():
     project_name = project_name_var.get()
-    global selected_version, rb_import_var, gp_import_var, entrada1rb, entrada2gp
+    global selected_version, project_dir
     if not UserConfig.CheckDll(selected_version):
         label_status.config(text="Erro: Dll não configurada para esta versão do TIA")
         return
     
-    if project_name != None and project_name != '' and project_dir != None and project_dir != '': 
+    if not validate_all_device_names():
+        label_status.config(text="Erro: Há nomes de dispositivos duplicados. Por favor, verifique.")
+        return
+    
+    if project_name and project_dir: 
         devices = []
         for linha in InfoHardware:
             devices.append({"HardwareType": linha["combobox"].get(), "Mlfb":linha["mlfb"].get(), "Name": linha["entry"].get()})   
@@ -55,21 +59,25 @@ def open_directory_dialog():
     
 def open_file_dialog():
     return filedialog.askopenfilename()
+
+def validate_all_device_names():
+    names_seen = {}
+    all_names_valid = True
+    for info in InfoHardware:
+        device_name = info["entry"].get()
+        if device_name in names_seen:
+            info["entry"].set('')  # Limpa o campo de entrada duplicado
+            messagebox.showerror("Erro", f"O nome do dispositivo '{device_name}' já existe. Por favor, escolha um nome diferente.")
+            all_names_valid = False
+        else:
+            names_seen[device_name] = info["entry"]
+    return all_names_valid
     
 def AddHardware():
     tupla_Input = {"combobox": tk.StringVar(root), "mlfb": tk.StringVar(root), "entry": tk.StringVar(root)}
     
     global NHardware
     
-    def validate_device_name(event=None):
-        new_device_name = tupla_Input["entry"].get()
-        for info in InfoHardware:
-            if info["entry"].get() == new_device_name and info is not tupla_Input:
-                messagebox.showerror("Erro", "O nome do dispositivo já existe. Por favor, escolha um nome diferente.")
-                tupla_Input["entry"].set('')  # Limpa o campo de entrada duplicado
-                return False
-        return True
-
     def focus_next_widget(event):
         event.widget.tk_focusNext().focus()
         return "break"
@@ -103,9 +111,7 @@ def AddHardware():
     entry = ttk.Entry(screen_frames[4], textvariable=tupla_Input["entry"])
     entry.grid(row=NHardware, column=2, padx=5)
     
-    # Adicione o callback de validação ao campo de entrada quando ele perder o foco ou quando a tecla Enter for pressionada
-    entry.bind('<FocusOut>', validate_device_name)
-    entry.bind('<Return>', validate_device_name)
+    # Adicione o callback para focar no próximo widget quando a tecla Enter for pressionada
     entry.bind('<Return>', focus_next_widget)
 
     NHardware += 1
@@ -197,7 +203,7 @@ def main_screen():
         btn_open_dialog.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
         # Button para criar
-        criarBtn = tk.Button(proj_config_frame, text="Crair projeto", command=CreateProject)
+        criarBtn = tk.Button(proj_config_frame, text="Criar projeto", command=CreateProject)
         criarBtn.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
         # Button para abrir projeto
