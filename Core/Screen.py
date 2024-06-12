@@ -3,6 +3,7 @@ sys.coinit_flags = 2
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 from PIL import Image, ImageTk
+import pywinauto
 
 from repositories import UserConfig
 from repositories import MlfbManagement
