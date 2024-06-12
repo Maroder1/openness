@@ -24,7 +24,7 @@ def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blo
         print(RPA_status)
         
         global myproject
-        myproject = mytia.Projects.Create(project_dir, project_name)
+        myproject = OpennessService.create_project(mytia, project_dir, project_name)
 
         deviceName = ''
         deviceMlfb = ''
