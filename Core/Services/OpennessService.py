@@ -1,7 +1,8 @@
 import os
 import clr
 from System.IO import DirectoryInfo, FileInfo  # type: ignore
-from System import Type # type: ignore
+clr.AddReference('System.Collections')
+from System.Collections.Generic import List
 from repositories import UserConfig
 import re
 
@@ -30,21 +31,70 @@ def add_DLL(tia_Version):
     except Exception as e:
         print("Error adding DLL reference: ", e)
         return False
+    
 def open_tia_ui():
     # Create an instance of Tia Portal
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
 
+def compilate_item(to_compile):
+    try:
+        RPA_status = "Compiling..."
+        print(RPA_status)
+        compiler_result = get_service(comp.ICompilable, to_compile).Compile()
+        
+        enumerable_attributes = get_attibutes(["State"], compiler_result)
+        state = enumerable_attributes[0]
+        print("State: ", state)
+        
+        if state == "Success":
+            RPA_status = "Compilation successful!"
+            print(RPA_status)
+            return "Success"
+        else:
+            RPA_status = "Compilation failed!"
+            print(RPA_status)
+            return "Error"
+            # get_compilation_error_description(compiler_result.Messages)
+            
+    except Exception as e:
+        print('Error compiling device:', e)
+        
+# def get_compilation_error_description(messages):
+#     description = ""
+#     while description == "":
+#         print(messages.GetType())
+#         next_resulte = messages[0]
+#         description = get_attibutes(["Description"], next_resulte)
+#         messages = next_resulte.Messages
+#         print("Looping")
+#     raise Exception(description)
+        
+def get_attibutes(attribute_names, item):
+    cs_attribute_names = List[str]()
+    for i in attribute_names:
+        cs_attribute_names.Add(i)
+    return item.GetAttributes(cs_attribute_names)
+    
+def get_all_devices(myproject):
+    try:
+        devices = []
+        for device in myproject.Devices:
+            devices.append(device)
+        return devices
+    except Exception as e:
+        print('Error getting all devices:', e)
+        
 def configurePath(path):
     return path.replace("/", "\\")
 
 def get_directory_info(path):
     project_dir = configurePath(path)
-    return DirectoryInfo (project_dir)
+    return DirectoryInfo(project_dir)
 
 def get_file_info(path):
     path = configurePath(path)
     return FileInfo(path)
-    
+
 def open_project(project_path):
     file_info = get_file_info(project_path)
     
@@ -52,20 +102,22 @@ def open_project(project_path):
         print("Project file not found:", project_path)
         return None
     mytia = open_tia_ui()
-    return mytia.Projects.Open(file_info)
+    return mytia.Projects.OpenWithUpgrade(file_info)
 
 def addHardware(deviceType, deviceName, deviceMlfb, myproject):
     try:
         if deviceType == "PLC":
             print('Creating CPU: ', deviceName)
             config_Plc = "OrderNumber:"+deviceMlfb+"/V1.6"
-            return myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
+            deviceCPU = myproject.Devices.CreateWithItem(config_Plc, deviceName, deviceName)
+            return deviceCPU
             
         elif deviceType == "HMI":
             RPA_status = 'Creating HMI: ', deviceName
             print(RPA_status)
             config_Hmi = 'OrderNumber:6AV2 124-0GC01-0AX0/15.1.0.0'
-            return myproject.Devices.CreateWithItem(config_Hmi, deviceName, None)
+            deviceHMI =  myproject.Devices.CreateWithItem(config_Hmi, deviceName, None)
+            return deviceHMI
 
         elif deviceType == "IO Node":
             RPA_status = 'Creating IO Node: ', deviceName
@@ -84,11 +136,12 @@ def GetAllProfinetInterfaces(myproject):
     print(RPA_status)
     try:
         network_ports = []
-        for device in myproject.Devices:
+        for device in myproject.Devices:            
             if (not is_gsd(device)):
                 hardware_type = getHardwareType(device)
                 
                 if (hardware_type == "CPU"):
+                    get_types(device)
                     network_interface_cpu = get_network_interface_CPU(device)
                     network_ports.append(network_interface_cpu)
                     
@@ -97,7 +150,7 @@ def GetAllProfinetInterfaces(myproject):
                     network_ports.append(network_interface_ihm)
                     
             else:
-                RPA_status = 'Device' + device.GetAttribute("Name") + ' is GSD: '
+                RPA_status = 'Device' + str(device.GetAttribute("Name")) + ' is GSD: '
                 print(RPA_status)
                 
         return network_ports
@@ -108,24 +161,46 @@ def GetAllProfinetInterfaces(myproject):
         
 def getCompositionPosition(deviceComposition):
     return deviceComposition.DeviceItems
+
+def get_service(tipo, parent):
+    try:
+        network_interface_type = tipo
+        getServiceMethod = parent.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
+        return getServiceMethod.Invoke(parent, None)
+    except Exception as e:
+        RPA_status = 'Error getting service: ', e
+        print(RPA_status)
+        
+def get_software(parent):
+    try:
+        parent = parent.DeviceItems[1]
+        software_container = get_service(hwf.SoftwareContainer, parent)
+        if not software_container:
+            raise Exception("No SoftwareContainer found for device.")
+        else:
+            plc_software = software_container.Software
+            if not plc_software:
+                raise Exception("No PLC software found for device.")
+            return software_container.Software
+    except Exception as e:
+        RPA_status = 'Error getting software container: ', e
+        print(RPA_status)
+        print("Name: ", str(parent.GetAttribute("Name")))
+        print("Type: ", parent.GetType())
         
 def get_network_interface_CPU(deviceComposition):
     cpu = getCompositionPosition(deviceComposition)[1].DeviceItems
     for option in cpu:
         optionName = option.GetAttribute("Name")
         if optionName == "PROFINET interface_1":
-            network_interface_type = hwf.NetworkInterface
-            getServiceMethod = option.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
-            return getServiceMethod.Invoke(option, None)
+            return get_service(hwf.NetworkInterface, option)
             
 def get_network_interface_HMI(deviceComposition):
     hmi = getCompositionPosition(deviceComposition)[1].DeviceItems
     for option in hmi:
         optionName = option.GetAttribute("Name")
         if optionName == "PROFINET Interface_1":
-            network_interface_type = hwf.NetworkInterface
-            getServiceMethod = option.GetType().GetMethod("GetService").MakeGenericMethod(network_interface_type)
-            return getServiceMethod.Invoke(option, None)
+            return get_service(hwf.NetworkInterface, option)
         
 def is_gsd(device):
     try:
@@ -227,18 +302,7 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0, tipo='' 
             return
 
         # Acessar o serviço SoftwareContainer do item do dispositivo
-        software_container = device.DeviceItems[1].GetService[hwf.SoftwareContainer]()
-        
-        if not software_container:
-            print(f"No SoftwareContainer found for device {device_name}.")
-            return
-
-        # Acessar o software PLC do contêiner de software
-        plc_software = software_container.Software
-        
-        if not plc_software:
-            print(f"No PLC software found for device {device_name}.")
-            return
+        plc_software = get_software(device)
 
         # Extrair nome e número base do XML
         if tipo == 'robo':
@@ -279,3 +343,39 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0, tipo='' 
 
     except Exception as e:
         print('Error verifying or importing file:', e)
+        
+def get_types(cpu):
+    plc_software = get_software(cpu)
+    type_group = plc_software.TypeGroup
+    return type_group.Types 
+
+def import_data_type(cpu, data_type_path):
+    try:
+        types = get_types(cpu)
+        data_type_path = get_directory_info(data_type_path)
+        
+        types.Import(data_type_path, None, None)
+    except Exception as e:
+        print('Error importing data type:', e)
+    
+def export_data_type(cpu, data_type_name : str, data_type_path : str):
+    try:
+        types = get_types(cpu)
+        data_type_path = data_type_path + "\\" + data_type_name + ".xml"
+        data_type_path = get_file_info(data_type_path)
+        
+        data_type = types.Find(str(data_type_name))
+        
+        if data_type is not None:
+            if data_type.GetAttribute("IsConsistent") == False:
+                if compilate_item(data_type) != "Success":
+                    raise Exception("Error compiling data type")
+        
+            data_type.Export(data_type_path, tia.ExportOptions.WithDefaults)
+            RPA_status = 'Data type exported successfully!'
+            print(RPA_status)
+        else:
+            print("Data type not found")
+            
+    except Exception as e:
+        print('Error exporting data type while in service:', e)

@@ -5,6 +5,7 @@ import tkinter as tk
 
 RPA_status = ""
 hardwareList = []
+myproject = None
 
 def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blocks_value):
 
@@ -22,6 +23,7 @@ def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blo
         RPA_status = 'Creating project'
         print(RPA_status)
         
+        global myproject
         myproject = mytia.Projects.Create(project_dir, project_name)
 
         deviceName = ''
@@ -77,7 +79,10 @@ def open_project(project_path):
     RPA_status = 'Opening project'
     print(RPA_status)
     try:
-        OpennessService.open_project(project_path)
+        global myproject
+        myproject = OpennessService.open_project(project_path)
+        RPA_status = 'Project opened successfully!'
+        print(RPA_status)
         
     except Exception as e:
         RPA_status = f'Error opening project: {e}\n{traceback.format_exc()}'
@@ -92,6 +97,22 @@ def export_Block(PlcSoftware):
     except Exception as e:
         RPA_status = 'Error exporting block: ', e
         print('Error exporting block: ', e)
+        return
+    
+def export_data_type(cpu, data_type_name : str, data_type_path : str):
+    RPA_status = 'Exporting data type'
+    print(RPA_status)
+    
+    try:
+        if cpu == None:
+            global myproject
+            cpu_list = OpennessService.get_all_devices(myproject)
+            cpu = cpu_list[0]
+            
+        OpennessService.export_data_type(cpu, data_type_name, data_type_path)
+    except Exception as e:
+        RPA_status = 'Error exporting data type while in controller: ', e
+        print(RPA_status)
         return
         
     
