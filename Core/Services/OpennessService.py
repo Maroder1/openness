@@ -268,7 +268,7 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0, tipo='' 
             print(f"Repetition {i+1} of {repetitions}")
 
             # Modificar o XML com novos valores de nome e número
-            novo_nome = f"{int(nome_base.split('_')[0]) + i + 1:04d}_Falhas"
+            novo_nome = f"{int(nome_base.split('_')[0]) + i + 1:04d}_{nome_base.split('_')[1]}"
             novo_numero = numero_base + i + 1
             
             # Chamar a função para modificar o XML
