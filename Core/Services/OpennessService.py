@@ -36,6 +36,13 @@ def open_tia_ui():
     # Create an instance of Tia Portal
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
 
+def create_project(tia_instance, project_dir, project_name):
+    proj_dir_info = get_directory_info(project_dir+"\\"+project_name)
+    if not proj_dir_info.Exists:
+        return tia_instance.Projects.Create(project_dir, project_name)
+    else:
+        return "Project already exists"
+
 def compilate_item(to_compile):
     try:
         RPA_status = "Compiling..."
