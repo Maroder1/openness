@@ -52,6 +52,10 @@ def opn_project():
     else:
         label_status.config(text="Erro: Projeto não selecionado")
 
+def open_directory_project_dialog():
+    global project_dir
+    project_dir = filedialog.askdirectory()
+
 def open_directory_dialog():
     return filedialog.askdirectory()
     
@@ -195,7 +199,7 @@ def main_screen():
         entrada1.grid(row=0, column=1, padx=5, pady=5)
 
         # Path
-        btn_open_dialog = tk.Button(proj_config_frame, text="Selecionar diretório", command=open_directory_dialog)
+        btn_open_dialog = tk.Button(proj_config_frame, text="Selecionar diretório", command=open_directory_project_dialog)
         btn_open_dialog.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
         # Button para criar
@@ -296,6 +300,8 @@ def user_config_screen():
     
     fechar_botao = tk.Button(usr_config_screen, text="Fechar", command=usr_config_screen.destroy)
     fechar_botao.pack()
+    # Carregar a imagem
+    load_image(usr_config_screen, r".\logo.PNG")
     
 def export_data_type_screen():
     data_type_config_screen = tk.Toplevel(root)
@@ -321,8 +327,7 @@ def call_export_dt():
     dt_name = dt_to_export.get()
     export_data_type(None, dt_name, open_directory_dialog())
 
-   # Carregar a imagem
-    load_image(usr_config_screen, r".\logo.PNG")
+   
 
 
 def import_blocks_screen():

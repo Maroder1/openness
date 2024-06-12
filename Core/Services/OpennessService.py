@@ -2,7 +2,7 @@ import os
 import clr
 from System.IO import DirectoryInfo, FileInfo  # type: ignore
 clr.AddReference('System.Collections')
-from System.Collections.Generic import List
+from System.Collections.Generic import List # type: ignore
 from repositories import UserConfig
 import re
 

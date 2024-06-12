@@ -1,2 +1,2 @@
-Robô - Quantidade: 2
-Grampo - Quantidade: 2
+Robô - Quantidade: 0
+Grampo - Quantidade: 0

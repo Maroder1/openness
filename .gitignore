@@ -1,4 +1,3 @@
 *.pyc
 core/__pycache__/*
 core/build/*
-Core/repositories/Openness.db
