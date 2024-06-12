@@ -1,6 +1,7 @@
 import sys
 sys.coinit_flags = 2
 import pywinauto
+import os
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 from PIL import Image, ImageTk
@@ -12,9 +13,12 @@ from Controller.OpennessController import open_project, export_Block, export_dat
 from Services.OpennessService import add_DLL
 import Controller.OpennessController as OpennessController
 
+
+
 # Criando a janela principal
 root = tk.Tk()
 root.geometry("600x400")
+# root.iconbitmap("favico.ico")
 root.title("RPA Tia Openness")
 
 # Variavel no nome do projeto
@@ -235,7 +239,7 @@ def main_screen():
         label_status.pack(padx=5, pady=5)
 
         # Carregar a imagem
-        load_image(root, r".\logo.PNG")
+        load_image(root, r"./logo.png")
 
         root.mainloop()
 def set_version(version_select):
@@ -301,7 +305,7 @@ def user_config_screen():
     fechar_botao = tk.Button(usr_config_screen, text="Fechar", command=usr_config_screen.destroy)
     fechar_botao.pack()
     # Carregar a imagem
-    load_image(usr_config_screen, r".\logo.PNG")
+    load_image(usr_config_screen, r"./logo.PNG")
     
 def export_data_type_screen():
     data_type_config_screen = tk.Toplevel(root)
