@@ -1,7 +1,8 @@
 import os
 import clr
 from System.IO import DirectoryInfo, FileInfo  # type: ignore
-from System import Type # type: ignore
+clr.AddReference('System.Collections')
+from System.Collections.Generic import List
 from repositories import UserConfig
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
@@ -41,16 +42,40 @@ def compilate_item(to_compile):
         RPA_status = "Compiling..."
         print(RPA_status)
         compiler_result = get_service(comp.ICompilable, to_compile).Compile()
-        if compiler_result.GetAttribute("State") == "Success":
+        
+        enumerable_attributes = get_attibutes(["State"], compiler_result)
+        state = enumerable_attributes[0]
+        print("State: ", state)
+        
+        if state == "Success":
             RPA_status = "Compilation successful!"
             print(RPA_status)
+            return "Success"
         else:
             RPA_status = "Compilation failed!"
             print(RPA_status)
-            RPA_status = "Error de compilação: " + compiler_result.GetAttribute("State")
+            return "Error"
+            # get_compilation_error_description(compiler_result.Messages)
+            
     except Exception as e:
         print('Error compiling device:', e)
         
+# def get_compilation_error_description(messages):
+#     description = ""
+#     while description == "":
+#         print(messages.GetType())
+#         next_resulte = messages[0]
+#         description = get_attibutes(["Description"], next_resulte)
+#         messages = next_resulte.Messages
+#         print("Looping")
+#     raise Exception(description)
+        
+def get_attibutes(attribute_names, item):
+    cs_attribute_names = List[str]()
+    for i in attribute_names:
+        cs_attribute_names.Add(i)
+    return item.GetAttributes(cs_attribute_names)
+    
 def get_all_devices(myproject):
     try:
         devices = []
@@ -402,19 +427,12 @@ def export_data_type(cpu, data_type_name : str, data_type_path : str):
         data_type_path = data_type_path + "\\" + data_type_name + ".xml"
         data_type_path = get_file_info(data_type_path)
         
-        data_type = None
-        for data_type_items in types:
-            print("Procurando data type:", data_type_name)
-            if data_type_items.GetAttribute("Name") == data_type_name:
-                data_type = data_type_items
-                print("Data type found")
-            break
+        data_type = types.Find(str(data_type_name))
         
         if data_type is not None:
-            while data_type.GetAttribute("IsConsistent") == False:
-                print("Type: ", data_type.GetType())
-                print("Data type is not consistent")
-                compilate_item(data_type)
+            if data_type.GetAttribute("IsConsistent") == False:
+                if compilate_item(data_type) != "Success":
+                    raise Exception("Error compiling data type")
         
             data_type.Export(data_type_path, tia.ExportOptions.WithDefaults)
             RPA_status = 'Data type exported successfully!'
@@ -423,4 +441,4 @@ def export_data_type(cpu, data_type_name : str, data_type_path : str):
             print("Data type not found")
             
     except Exception as e:
-        print('Error exporting data type while in service:', e)	
+        print('Error exporting data type while in service:', e)
