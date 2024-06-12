@@ -2,11 +2,11 @@ import sys
 sys.coinit_flags = 2
 import pywinauto
 import tkinter as tk
-from tkinter import filedialog, ttk 
+from tkinter import filedialog, ttk, messagebox
 
 from repositories import UserConfig
 from repositories import MlfbManagement
-from Controller.OpennessController import open_project, export_Block
+from Controller.OpennessController import open_project
 
 import Controller.OpennessController as OpennessController
 
@@ -55,11 +55,23 @@ def open_file_dialog():
     return filedialog.askopenfilename()
     
 def AddHardware():
-    
     tupla_Input = {"combobox": tk.StringVar(root), "mlfb": tk.StringVar(root), "entry": tk.StringVar(root)}
     
     global NHardware
     
+    def validate_device_name(event=None):
+        new_device_name = tupla_Input["entry"].get()
+        for info in InfoHardware:
+            if info["entry"].get() == new_device_name and info is not tupla_Input:
+                messagebox.showerror("Erro", "O nome do dispositivo já existe. Por favor, escolha um nome diferente.")
+                tupla_Input["entry"].set('')  # Limpa o campo de entrada duplicado
+                return False
+        return True
+
+    def focus_next_widget(event):
+        event.widget.tk_focusNext().focus()
+        return "break"
+
     # Combobox 1º coluna
     combobox = ttk.Combobox(screen_frames[4], textvariable=tupla_Input["combobox"], values=opcoes_Hardware)
     combobox.grid(row=NHardware, column=0, padx=5)
@@ -68,9 +80,9 @@ def AddHardware():
     mlfb_combobox = ttk.Combobox(screen_frames[4], textvariable=tupla_Input["mlfb"])
     mlfb_combobox.grid(row=NHardware, column=1, padx=5)
     
-    def update_mlfb_combobox(event):
+    def update_mlfb_combobox(*args):
         selected_option = tupla_Input["combobox"].get()
-
+        
         if selected_option == "PLC":
             valueSource = mlfb_List[0]
         elif selected_option == "HMI":
@@ -83,15 +95,21 @@ def AddHardware():
         mlfb_combobox['values'] = valueSource
     
     # Vincule a função de atualização da combobox à combobox principal
-    tupla_Input["combobox"].trace_add('write', lambda *args: update_mlfb_combobox(None))
+    tupla_Input["combobox"].trace_add('write', update_mlfb_combobox)
     
-    # Entry 2º coluna
+    # Entry 3º coluna
     entry = ttk.Entry(screen_frames[4], textvariable=tupla_Input["entry"])
     entry.grid(row=NHardware, column=2, padx=5)
     
+    # Adicione o callback de validação ao campo de entrada quando ele perder o foco ou quando a tecla Enter for pressionada
+    entry.bind('<FocusOut>', validate_device_name)
+    entry.bind('<Return>', validate_device_name)
+    entry.bind('<Return>', focus_next_widget)
+
     NHardware += 1
     
     InfoHardware.append(tupla_Input)
+
 
 
 def update_status(status):
@@ -181,7 +199,7 @@ def main_screen():
         criarBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
         # Button para exportar bloco
-        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=export_Block)
+        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=open_project)
         criarBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
 
