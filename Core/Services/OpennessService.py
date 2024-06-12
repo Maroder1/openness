@@ -1,8 +1,10 @@
 import os
 import clr
-from System.IO import DirectoryInfo, FileInfo # type: ignore
+from System.IO import DirectoryInfo, FileInfo  # type: ignore
 from System import Type # type: ignore
 from repositories import UserConfig
+import re
+
 
 
 
@@ -199,3 +201,81 @@ def export_Fb(PlcSoftware):
     with open(caminho_arquivo, 'w') as arquivo:
         # Escreve alguma coisa no arquivo
         arquivo.write(Block.Name)
+
+
+#(TiaPortal.Projects[0].Devices[0].DeviceItems[1].GetService<SoftwareContainer>().Software as PlcSoftware).BlockGroup.Blocks
+
+# Função para alterar o nome e número no XML
+def editar_tags_xml(arquivo, novo_nome, novo_numero):
+    with open(arquivo, 'r', encoding='utf-8') as file:
+        conteudo = file.read()
+
+    # Substituir o texto nas tags <Name> e <Number>
+    conteudo = re.sub(r'(?<=<Name>)[^<]+(?=</Name>)', novo_nome, conteudo)
+    conteudo = re.sub(r'(?<=<Number>)[^<]+(?=</Number>)', str(novo_numero), conteudo)
+    
+    with open(arquivo, 'w', encoding='utf-8') as file:
+        file.write(conteudo)
+
+def verify_and_import(myproject, device_name, file_path, repetitions=0, tipo='' ):
+    try:
+        # Verificar se o dispositivo existe no projeto
+        device = next((d for d in myproject.Devices if d.Name == device_name), None)
+        
+        if not device:
+            print(f"Device {device_name} not found in the project.")
+            return
+
+        # Acessar o serviço SoftwareContainer do item do dispositivo
+        software_container = device.DeviceItems[1].GetService[hwf.SoftwareContainer]()
+        
+        if not software_container:
+            print(f"No SoftwareContainer found for device {device_name}.")
+            return
+
+        # Acessar o software PLC do contêiner de software
+        plc_software = software_container.Software
+        
+        if not plc_software:
+            print(f"No PLC software found for device {device_name}.")
+            return
+
+        # Extrair nome e número base do XML
+        if tipo == 'robo':
+            nome_base = "0070_robo"
+            numero_base = 70
+        else:
+            nome_base = "0080_Grampo"
+            numero_base = 80
+
+        if not nome_base or not numero_base:
+            print("Failed to extract base name or number from XML.")
+            return
+
+        # Função para importar os blocos de código para o software PLC
+        def import_blocks():
+            print(f"Importing block to CPU: {device_name}")
+            import_options = tia.ImportOptions.Override
+            graphic_file_info = FileInfo(file_path)
+            blocos = plc_software.BlockGroup.Blocks.Import(graphic_file_info, import_options)
+            print(blocos)
+
+        # Executar a primeira importação
+        import_blocks()
+
+        # Executar importações adicionais conforme necessário
+        for i in range(repetitions):
+            print(f"Repetition {i+1} of {repetitions}")
+
+            # Modificar o XML com novos valores de nome e número
+            novo_nome = f"{int(nome_base.split('_')[0]) + i + 1:04d}_Falhas"
+            novo_numero = numero_base + i + 1
+            
+            # Chamar a função para modificar o XML
+            editar_tags_xml(file_path, novo_nome, novo_numero)
+
+            # Realizar a importação após modificar o XML
+            import_blocks()
+
+    except Exception as e:
+        print('Error verifying or importing file:', e)

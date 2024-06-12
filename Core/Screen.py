@@ -2,6 +2,7 @@ import sys
 sys.coinit_flags = 2
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
+from PIL import Image, ImageTk
 
 from repositories import UserConfig
 from repositories import MlfbManagement
@@ -16,12 +17,14 @@ root.title("RPA Tia Openness")
 
 # Variavel no nome do projeto
 project_name_var=tk.StringVar()
+quant_rb_import=tk.IntVar()
+quant_gp_import=tk.IntVar()
 
 
 ############### FUNCTIONS ################
 def CreateProject():
     project_name = project_name_var.get()
-    global selected_version
+    global selected_version, rb_import_var, gp_import_var, entrada1rb, entrada2gp
     if not UserConfig.CheckDll(selected_version):
         label_status.config(text="Erro: Dll não configurada para esta versão do TIA")
         return
@@ -31,7 +34,7 @@ def CreateProject():
         for linha in InfoHardware:
             devices.append({"HardwareType": linha["combobox"].get(), "Mlfb":linha["mlfb"].get(), "Name": linha["entry"].get()})   
         label_status.config(text="Criando projeto...")
-        OpennessController.create_project(project_dir, project_name, devices)
+        OpennessController.create_project(project_dir, project_name, devices, rb_blocks_value, gp_blocks_value)
     
     else:
         label_status.config(text="Erro: Nome do projeto ou diretório não informados")
@@ -146,6 +149,10 @@ selected_version = None
 mlfb_Plc = []
 mlfb_ihm = []
 mlfb_npde = []
+rb_blocks_value = 0
+rb_import_state = 0
+gp_blocks_value = 0
+gp_import_state = 0
 
 mlfb_List=[mlfb_Plc, mlfb_ihm, mlfb_npde]
 
@@ -198,7 +205,7 @@ def main_screen():
         criarBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
         # Button para exportar bloco
-        criarBtn = tk.Button(proj_config_frame, text="Export Blocks", command=open_project)
+        criarBtn = tk.Button(proj_config_frame, text="Import Blocks", command=import_blocks_screen)
         criarBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
 
@@ -217,6 +224,10 @@ def main_screen():
         global label_status
         label_status = tk.Label(root, text="Nome do projeto: " + RAP_status_Tela)
         label_status.pack(padx=5, pady=5)
+
+        # Carregar a imagem
+        load_image(root, r".\logo.PNG")
+
 
         root.mainloop()
 def set_version(version_select):
@@ -253,7 +264,7 @@ def user_config_screen():
     
     dll_config_frame = ttk.Frame(usr_config_screen)
     
-    InstructionsDllPath = tk.Label(dll_config_frame, text="Indique o caminho das dlls:")
+    InstructionsDllPath = tk.Label(dll_config_frame, text="Selecione a versão do TIA Portal:")
     InstructionsDllPath.grid(row=0, column=0, padx=5, pady=5)
 
     dll_matrix = []
@@ -281,6 +292,93 @@ def user_config_screen():
     
     fechar_botao = tk.Button(usr_config_screen, text="Fechar", command=usr_config_screen.destroy)
     fechar_botao.pack()
+
+   # Carregar a imagem
+    load_image(usr_config_screen, r".\logo.PNG")
+
+
+def import_blocks_screen():
+    global rb_blocks_value, rb_import_state, gp_blocks_value, gp_import_state
+    
+    # Criando a janela
+    import_config_frame = tk.Toplevel(root)
+    import_config_frame.title("Configurações dos blocos")
+    import_config_frame.geometry("600x200")
+
+    import_config_frame.transient(root)
+    import_config_frame.grab_set()
+    
+    # Label informativo
+    nova_label = tk.Label(import_config_frame, text="Aqui você pode selecionar os blocos que deseja importar")
+    nova_label.pack(pady=10)
+    
+    # Frame para os blocos
+    frame_blocks = tk.Frame(import_config_frame)
+    frame_blocks.pack(pady=10)
+
+    # Adicione os elementos ao frame_blocks
+    add_elements_to_frame(frame_blocks)
+
+    # Botão para salvar configurações e fechar a janela
+    save_btn = tk.Button(import_config_frame, text="Salvar Configurações", command=lambda: save_config(entrada1rb, entrada2gp, import_config_frame))
+    save_btn.pack(pady=20)
+
+def add_elements_to_frame(frame):
+    global entrada1rb, entrada2gp
+    
+    # Bloco do robô
+    InstructionBlocks = tk.Label(frame, text="Quantidade de blocos do robô deseja importar?")
+    InstructionBlocks.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+
+    entrada1rb = tk.Entry(frame)
+    entrada1rb.insert(0, rb_blocks_value)  # Inserir o valor armazenado
+    entrada1rb.grid(row=0, column=1, padx=2, pady=2)
+
+
+    # Bloco do grampo
+    InstructionBlocks1 = tk.Label(frame, text="Quantidade de blocos do grampo deseja importar?")
+    InstructionBlocks1.grid(row=1, column=0, padx=5, pady=5, sticky='w')
+
+    entrada2gp = tk.Entry(frame)
+    entrada2gp.insert(0, gp_blocks_value)  # Inserir o valor armazenado
+    entrada2gp.grid(row=1, column=1, padx=2, pady=2)
+
+
+def save_config(entrada1rb, entrada2gp, window):
+    global rb_blocks_value, gp_blocks_value
+    
+    # Atualizar as variáveis globais com os valores atuais
+    rb_blocks_value = int(entrada1rb.get())
+    gp_blocks_value = int(entrada2gp.get())
+    
+    # Aqui você pode salvar esses dados em um arquivo, banco de dados, etc.
+    with open("config_blocos.txt", "w") as file:
+        file.write(f"Robô - Quantidade: {rb_blocks_value}\n")
+        file.write(f"Grampo - Quantidade: {gp_blocks_value}\n")
+
+    print("Configurações salvas com sucesso!")
+    
+    # Fecha a janela
+    window.destroy()
+
+
+
+def load_image(window, image_path):
+    # Carregar a imagem
+    img = Image.open(image_path)
+    img = img.resize((125, 100))  # Redimensionar a imagem conforme necessário
+    img = ImageTk.PhotoImage(img)
+        
+    # Exibir a imagem
+    label_image = tk.Label(window, image=img)
+    label_image.image = img  # Mantém uma referência para evitar a coleta de lixo
+    label_image.place(x=window.winfo_width() - img.width(), y=0)
+
+    # Atualizar a posição da imagem quando a largura da janela mudar
+    def update_image_position(event):
+        label_image.place(x=window.winfo_width() - img.width(), y=0)
+
+    window.bind("<Configure>", update_image_position)
         
 ############### RENDER ################
 main_screen()
