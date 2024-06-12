@@ -91,7 +91,7 @@ def export_Block(PlcSoftware):
         print('Error exporting block: ', e)
         return
     
-def export_data_type(cpu, data_type_name, data_type_path):
+def export_data_type(cpu, data_type_name : str, data_type_path : str):
     RPA_status = 'Exporting data type'
     print(RPA_status)
     
@@ -99,11 +99,7 @@ def export_data_type(cpu, data_type_name, data_type_path):
         if cpu == None:
             global myproject
             cpu_list = OpennessService.get_all_devices(myproject)
-            for cpu in cpu_list:
-                print("CPU: " + cpu.GetAttribute("Name"))
-            cpu = cpu_list[0] 
-        if data_type_name == None:
-            data_type_name = 'Default_DataType_Name'
+            cpu = cpu_list[0]
             
         OpennessService.export_data_type(cpu, data_type_name, data_type_path)
     except Exception as e:

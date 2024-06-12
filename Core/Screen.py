@@ -1,5 +1,6 @@
 import sys
 sys.coinit_flags = 2
+import pywinauto
 import tkinter as tk
 from tkinter import filedialog, ttk 
 from PIL import Image, ImageTk
@@ -19,7 +20,7 @@ root.title("RPA Tia Openness")
 project_name_var=tk.StringVar()
 quant_rb_import=tk.IntVar()
 quant_gp_import=tk.IntVar()
-
+dt_to_export = tk.StringVar()
 
 ############### FUNCTIONS ################
 def CreateProject():
@@ -285,18 +286,18 @@ def export_data_type_screen():
     frame_dt = tk.Frame(data_type_config_screen)
     frame_dt.pack(pady=10)
     
-    InstructionBlocks = tk.Label(frame_dt, text="Qual data type deseja exportar?")
+    InstructionBlocks = tk.Label(frame_dt, text="Nome do data type que deseja exportar?")
     InstructionBlocks.grid(row=0, column=0, padx=5, pady=5,)
     
-    nome_dt = tk.Entry(frame_dt, textvariable=quant_rb_import)
+    nome_dt = tk.Entry(frame_dt, textvariable=dt_to_export)
     nome_dt.grid(row=0, column=1, padx=5, pady=5)
     
     export_dt = tk.Button(frame_dt, text="Exportar", command=call_export_dt)
     export_dt.grid(row=1, column=1, columnspan=2 ,padx=5, pady=5)
     
 def call_export_dt():
-    project_dir = open_directory_dialog()
-    export_data_type(None, None, project_dir)
+    dt_name = dt_to_export.get()
+    export_data_type(None, dt_name, open_directory_dialog())
 
 def import_blocks_screen():
     import_config_frame = tk.Toplevel(root)

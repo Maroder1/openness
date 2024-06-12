@@ -36,11 +36,18 @@ def open_tia_ui():
     # Create an instance of Tia Portal
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
 
-def compilate_device(device):
+def compilate_item(to_compile):
     try:
-        RPA_status = "Compiling something..."
+        RPA_status = "Compiling..."
         print(RPA_status)
-        get_service(comp.ICompilable, device).Compile()
+        compiler_result = get_service(comp.ICompilable, to_compile).Compile()
+        if compiler_result.GetAttribute("State") == "Success":
+            RPA_status = "Compilation successful!"
+            print(RPA_status)
+        else:
+            RPA_status = "Compilation failed!"
+            print(RPA_status)
+            RPA_status = "Error de compilação: " + compiler_result.GetAttribute("State")
     except Exception as e:
         print('Error compiling device:', e)
         
@@ -71,7 +78,7 @@ def open_project(project_path):
         print("Project file not found:", project_path)
         return None
     mytia = open_tia_ui()
-    return mytia.Projects.Open(file_info)
+    return mytia.Projects.OpenWithUpgrade(file_info)
 
 def addHardware(deviceType, deviceName, deviceMlfb, myproject):
     try:
@@ -389,21 +396,31 @@ def import_data_type(cpu, data_type_path):
     except Exception as e:
         print('Error importing data type:', e)
     
-def export_data_type(cpu, data_type_name, data_type_path):
+def export_data_type(cpu, data_type_name : str, data_type_path : str):
     try:
         types = get_types(cpu)
-        data_type_path = get_directory_info(data_type_path)
+        data_type_path = data_type_path + "\\" + data_type_name + ".xml"
+        data_type_path = get_file_info(data_type_path)
         
-        data_type = types.Find(data_type_name)
-        if data_type is None:
+        data_type = None
+        for data_type_items in types:
+            print("Procurando data type:", data_type_name)
+            if data_type_items.GetAttribute("Name") == data_type_name:
+                data_type = data_type_items
+                print("Data type found")
+            break
+        
+        if data_type is not None:
+            while data_type.GetAttribute("IsConsistent") == False:
+                print("Type: ", data_type.GetType())
+                print("Data type is not consistent")
+                compilate_item(data_type)
+        
+            data_type.Export(data_type_path, tia.ExportOptions.WithDefaults)
+            RPA_status = 'Data type exported successfully!'
+            print(RPA_status)
+        else:
             print("Data type not found")
-            print(types.GetType())
-            return
-        elif data_type.GetAttribute("IsConsistent") == False:
-            print("Type: ", data_type.GetType())
-            print("Data type is not consistent")
-            compilate_device(cpu)
-        
-        data_type.Export(data_type_path, tia.ExportOptions.WithDefaults)
+            
     except Exception as e:
         print('Error exporting data type while in service:', e)	
