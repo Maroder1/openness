@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 import pywinauto
 
 from repositories import UserConfig, MlfbManagement
-from Controller.OpennessController import open_project, export_data_type, export_Block
+from Controller.OpennessController import open_project, export_data_type, export_block
 from Services.OpennessService import add_DLL
 import os
 import Controller.OpennessController as OpennessController
@@ -334,7 +334,7 @@ def call_export_dt():
 
 def call_export_bk():
     bk_name = bk_to_export.get()
-    export_Block(None, bk_name, open_directory_dialog())  
+    export_block(None, bk_name, open_directory_dialog())  
 
 
 def import_blocks_screen():

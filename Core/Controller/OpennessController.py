@@ -27,6 +27,7 @@ def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blo
         if hardware != None and myproject != None:
             addHardware(hardware)
             wire_profinet()
+            myproject.Save()
 
         if rb_blocks_value > 0 : 
             for device in hardware:
@@ -63,21 +64,20 @@ def addHardware(hardware):
         deviceType = device["HardwareType"]
         
         hardwareList.append(OpennessService.addHardware(deviceType, deviceName, deviceMlfb, myproject))
-    myproject.Save()
     
     
 def wire_profinet():
     global RPA_status
+    
     ProfinetInterfaces = OpennessService.GetAllProfinetInterfaces(myproject)
-    print("N de interfaces PROFINET: ", len(ProfinetInterfaces))
+    RPA_status = "Nº de interfaces PROFINET:" + str(len(ProfinetInterfaces))
+    print(RPA_status)
     
     if len(ProfinetInterfaces) > 1:
         mysubnet = OpennessService.SetSubnetName(myproject)
         for port in ProfinetInterfaces:
             node = port.Nodes[0]
             OpennessService.ConnectToSubnet(node, mysubnet)
-            
-        myproject.Save()
         
         RPA_status = "Rede PROFINET configurada com sucesso!"
         print(RPA_status)
@@ -102,12 +102,19 @@ def open_project(project_path):
         print(RPA_status)
         return
 
-def export_Block(device, block_name : str, block_path : str):
+def export_block(device, block_name : str, block_path : str):
     try:
         if device == None:
             device = OpennessService.get_device_by_index(myproject, 0)
             
-        OpennessService.export_Fb(device, block_name, block_path)
+        status = OpennessService.export_block(device, block_name, block_path)
+        if status:
+            RPA_status = 'Block exported successfully!'
+            print(RPA_status)
+        else:
+            RPA_status = 'Error exporting block'
+            print(RPA_status)
+            
     except Exception as e:
         RPA_status = 'Error exporting block: ', e
         print('Error exporting block: ', e)
@@ -121,8 +128,16 @@ def export_data_type(device, data_type_name : str, data_type_path : str):
     try:
         if device == None:
             device = OpennessService.get_device_by_index(myproject, 0)
-            
-        OpennessService.export_data_type(device, data_type_name, data_type_path)
+        
+        if not OpennessService.is_gsd(device):
+            result = OpennessService.export_data_type(device, data_type_name, data_type_path)
+            if result:
+                RPA_status = 'Data type exported successfully!'
+                print(RPA_status)
+            else:
+                RPA_status = 'Error exporting data type'
+                print(RPA_status)
+                
     except Exception as e:
         RPA_status = 'Error exporting data type while in controller: ', e
         print(RPA_status)

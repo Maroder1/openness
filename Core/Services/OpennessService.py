@@ -273,7 +273,7 @@ def SetSubnetName(myproject):
     print(RPA_status)
     return myproject.Subnets.Create("System:Subnet.Ethernet", "NewSubnet")    
     
-def export_Fb(device, block_name : str, block_path : str):
+def export_block(device, block_name : str, block_path : str):
     global RPA_status
     try:
         RPA_status = 'Exporting block'
@@ -284,6 +284,16 @@ def export_Fb(device, block_name : str, block_path : str):
         
         plc_software = get_software(device)
         myblock = plc_software.BlockGroup.Blocks.Find(block_name)
+    
+        attempts = 0
+        while myblock.GetAttribute("IsConsistent") == False:
+            result = compilate_item(myblock) != "Success"
+            if result == "Success":
+                break
+            attempts += 1
+            if attempts > 3:
+                raise Exception("Error compiling data type")
+        
         myblock.Export(block_path, tia.ExportOptions.WithDefaults)
         
     except Exception as e:
@@ -378,15 +388,24 @@ def export_data_type(device, data_type_name : str, data_type_path : str):
         data_type = types.Find(str(data_type_name))
         
         if data_type is not None:
-            if data_type.GetAttribute("IsConsistent") == False:
-                if compilate_item(data_type) != "Success":
+            attempts = 0
+            while data_type.GetAttribute("IsConsistent") == False:
+                result = compilate_item(data_type) != "Success"
+                if result == "Success":
+                    break
+                attempts += 1
+                if attempts > 3:
                     raise Exception("Error compiling data type")
         
             data_type.Export(data_type_path, tia.ExportOptions.WithDefaults)
             RPA_status = 'Data type exported successfully!'
             print(RPA_status)
+            return True
+        
         else:
-            print("Data type not found")
+            RPA_status = 'Data type not found'
+            print(RPA_status)
+            return False
             
     except Exception as e:
         print('Error exporting data type while in service:', e)
