@@ -43,7 +43,7 @@ target = Executable(
 
 setup(
     name="RPA Tia Openness",
-    version="0.1",
+    version="1.1.0",
     description="Interface for automated creation of TIA Portal projects using Openness API",
     options={"build_exe": build_exe_options},
     executables=[target]
