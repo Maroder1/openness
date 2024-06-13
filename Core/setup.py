@@ -6,6 +6,7 @@ build_exe_options = {
     "packages": ["pywinauto", "tkinter", "sqlite3"],
     "include_files": [
         # Assets
+        os.path.join("Assets", "favico.ico"),
         "logo.png",
         
         # Controller

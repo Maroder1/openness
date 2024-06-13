@@ -1,5 +1,6 @@
 import sys
 sys.coinit_flags = 2
+import os
 import pywinauto
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
@@ -9,14 +10,18 @@ import pywinauto
 from repositories import UserConfig, MlfbManagement
 from Controller.OpennessController import open_project, export_Block, export_data_type
 from Services.OpennessService import add_DLL
+import os
 import Controller.OpennessController as OpennessController
 
-
+favico_path = "./Assets/favico.ico"
+if not os.path.exists(favico_path):
+    favico_path = "favico.ico"
+    print("File exists")
 
 # Criando a janela principal
 root = tk.Tk()
 root.geometry("600x400")
-# root.iconbitmap("favico.ico")
+root.iconbitmap(favico_path)
 root.title("RPA Tia Openness")
 
 # Variavel no nome do projeto
