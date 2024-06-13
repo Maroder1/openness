@@ -3,7 +3,7 @@ import traceback
 from System.IO import FileInfo # type: ignore
 import tkinter as tk
 
-RPA_status = ""
+RPA_status = "Idle"
 hardwareList = []
 myproject = None
 
@@ -45,12 +45,13 @@ def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blo
         
         RPA_status = 'Project created successfully!'
         print(RPA_status)
-        return
+        
+        return True
 
     except Exception as e:
         RPA_status = f'Error: {e}'
         print(RPA_status)
-        return
+        return False
     
  
 def addHardware(hardware):
@@ -66,6 +67,7 @@ def addHardware(hardware):
     
     
 def wire_profinet():
+    global RPA_status
     ProfinetInterfaces = OpennessService.GetAllProfinetInterfaces(myproject)
     print("N de interfaces PROFINET: ", len(ProfinetInterfaces))
     
@@ -76,7 +78,7 @@ def wire_profinet():
             OpennessService.ConnectToSubnet(node, mysubnet)
             
         myproject.Save()
-            
+        
         RPA_status = "Rede PROFINET configurada com sucesso!"
         print(RPA_status)
         
@@ -86,6 +88,7 @@ def wire_profinet():
 
     
 def open_project(project_path):
+    global RPA_status
     RPA_status = 'Opening project'
     print(RPA_status)
     try:
@@ -100,6 +103,7 @@ def open_project(project_path):
         return
 
 def export_Block(PlcSoftware):
+    global RPA_status
     RPA_status = 'Exporting block'
     print(RPA_status)
     try:
@@ -110,6 +114,7 @@ def export_Block(PlcSoftware):
         return
     
 def export_data_type(cpu, data_type_name : str, data_type_path : str):
+    global RPA_status
     RPA_status = 'Exporting data type'
     print(RPA_status)
     

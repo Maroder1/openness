@@ -35,29 +35,33 @@ def CreateProject():
     project_name = project_name_var.get()
     global selected_version, project_dir
     if not UserConfig.CheckDll(selected_version):
-        label_status.config(text="Erro: Dll não configurada para esta versão do TIA")
+        label_status_projeto.config(text="Erro: Dll não configurada para esta versão do TIA")
         return
     
     if not validate_all_device_names():
-        label_status.config(text="Erro: Há nomes de dispositivos duplicados. Por favor, verifique.")
+        label_status_projeto.config(text="Erro: Há nomes de dispositivos duplicados. Por favor, verifique.")
         return
     
     if project_name and project_dir: 
         devices = []
         for linha in InfoHardware:
             devices.append({"HardwareType": linha["combobox"].get(), "Mlfb":linha["mlfb"].get(), "Name": linha["entry"].get()})   
-        label_status.config(text="Criando projeto...")
-        OpennessController.create_project(project_dir, project_name, devices, rb_blocks_value, gp_blocks_value)
-    
+        label_status_projeto.config(text="Criando projeto...")
+        status_criacao = OpennessController.create_project(project_dir, project_name, devices, rb_blocks_value, gp_blocks_value)
+        if status_criacao:
+            label_status_projeto.config(text="Projeto criado com sucesso!")
+        else:
+            label_status_projeto.config(text="Falha ao criar projeto")
+        
     else:
-        label_status.config(text="Erro: Nome do projeto ou diretório não informados")
+        label_status_projeto.config(text="Erro: Nome do projeto ou diretório não informados")
         
 def opn_project():
     project_path = open_file_dialog()
     if project_path != None and project_path != '':
         open_project(project_path)
     else:
-        label_status.config(text="Erro: Projeto não selecionado")
+        label_status_projeto.config(text="Erro: Projeto não selecionado")
 
 def open_directory_project_dialog():
     global project_dir
@@ -237,9 +241,9 @@ def main_screen():
         screen_frames.append(hardwareConfig)
         
         global RAP_status_Tela
-        global label_status
-        label_status = tk.Label(root, text="Nome do projeto: " + RAP_status_Tela)
-        label_status.pack(padx=5, pady=5)
+        global label_status_projeto
+        label_status_projeto = tk.Label(root, text="Status: " + RAP_status_Tela)
+        label_status_projeto.pack(padx=5, pady=5)
 
         # Carregar a imagem
         load_image(root, r"./logo.png")
