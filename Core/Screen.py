@@ -221,9 +221,13 @@ def main_screen():
         openBtn = tk.Button(proj_config_frame, text="Abrir projeto", command=opn_project)
         openBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
+        # Button para importar bloco
+        exportBkBtn = tk.Button(proj_config_frame, text="Import blocos", command=import_blocks_screen)
+        exportBkBtn.grid(row=4, column=0, padx=5, pady=5)
+        
         # Button para exportar bloco
-        exportBkBtn = tk.Button(proj_config_frame, text="Import Blocks", command=import_blocks_screen)
-        exportBkBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
+        exportBkBtn = tk.Button(proj_config_frame, text="Exprtar blocos", command=exportar_blocks_screen)
+        exportBkBtn.grid(row=4, column=1, padx=5, pady=5)
 
         # Button para exportar udt
         exportDtBtn = tk.Button(proj_config_frame, text="Export Data Type", command=export_data_type_screen)
@@ -354,6 +358,33 @@ def import_blocks_screen():
 
     # Botão para salvar configurações e fechar a janela
     save_btn = tk.Button(import_config_frame, text="Salvar Configurações", command=lambda: save_config(entrada1rb, entrada2gp, import_config_frame))
+    save_btn.pack(pady=20)
+    
+
+def exportar_blocks_screen():
+    global rb_blocks_value, rb_import_state, gp_blocks_value, gp_import_state
+    
+    # Criando a janela
+    export_config_frame = tk.Toplevel(root)
+    export_config_frame.title("Configurações dos blocos")
+    export_config_frame.geometry("540x200")
+
+    export_config_frame.transient(root)
+    export_config_frame.grab_set()
+    
+    # Label informativo
+    nova_label = tk.Label(export_config_frame, text="Aqui você pode selecionar os blocos que deseja exportar")
+    nova_label.pack(pady=10)
+    
+    # Frame para os blocos
+    frame_blocks = tk.Frame(export_config_frame)
+    frame_blocks.pack(pady=10)
+
+    # Adicione os elementos ao frame_blocks
+    add_elements_to_frame(frame_blocks)
+
+    # Botão para salvar configurações e fechar a janela
+    save_btn = tk.Button(export_config_frame, text="Salvar Configurações", command=lambda: save_config(entrada1rb, entrada2gp, export_config_frame))
     save_btn.pack(pady=20)
 
 def add_elements_to_frame(frame):
