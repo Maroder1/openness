@@ -26,7 +26,7 @@ def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blo
 
         if hardware != None and myproject != None:
             addHardware(hardware)
-            wire_profniet()
+            wire_profinet()
 
         if rb_blocks_value > 0 : 
             for device in hardware:
@@ -65,7 +65,7 @@ def addHardware(hardware):
     myproject.Save()
     
     
-def wire_profniet():
+def wire_profinet():
     ProfinetInterfaces = OpennessService.GetAllProfinetInterfaces(myproject)
     print("N de interfaces PROFINET: ", len(ProfinetInterfaces))
     
