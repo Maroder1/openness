@@ -275,16 +275,21 @@ def SetSubnetName(myproject):
     
 def export_Fb(device, block_name : str, block_path : str):
     global RPA_status
-    RPA_status = 'Exporting block'
-    print(RPA_status)
-    
-    block_path = block_path + "\\" + block_name + ".xml"
-    block_path = get_file_info(block_path)
-    
-    plc_software = get_software(device)
-    myblock = plc_software.BlockGroup.Blocks.Find(block_name)
-    myblock.Export(block_path, tia.ExportOptions.WithDefaults)
-
+    try:
+        RPA_status = 'Exporting block'
+        print(RPA_status)
+        
+        block_path = block_path + "\\" + block_name + ".xml"
+        block_path = get_file_info(block_path)
+        
+        plc_software = get_software(device)
+        myblock = plc_software.BlockGroup.Blocks.Find(block_name)
+        myblock.Export(block_path, tia.ExportOptions.WithDefaults)
+        
+    except Exception as e:
+        RPA_status = 'Error exporting block: ', e
+        print(RPA_status)
+        return
 
 # Função para alterar o nome e número no XML
 def editar_tags_xml(arquivo, novo_nome, novo_numero):

@@ -102,29 +102,27 @@ def open_project(project_path):
         print(RPA_status)
         return
 
-def export_Block(PlcSoftware):
-    global RPA_status
-    RPA_status = 'Exporting block'
-    print(RPA_status)
+def export_Block(device, block_name : str, block_path : str):
     try:
-        OpennessService.export_Fb(PlcSoftware)
+        if device == None:
+            device = OpennessService.get_device_by_index(myproject, 0)
+            
+        OpennessService.export_Fb(device, block_name, block_path)
     except Exception as e:
         RPA_status = 'Error exporting block: ', e
         print('Error exporting block: ', e)
         return
     
-def export_data_type(cpu, data_type_name : str, data_type_path : str):
+def export_data_type(device, data_type_name : str, data_type_path : str):
     global RPA_status
     RPA_status = 'Exporting data type'
     print(RPA_status)
     
     try:
-        if cpu == None:
-            global myproject
-            cpu_list = OpennessService.get_all_devices(myproject)
-            cpu = cpu_list[0]
+        if device == None:
+            device = OpennessService.get_device_by_index(myproject, 0)
             
-        OpennessService.export_data_type(cpu, data_type_name, data_type_path)
+        OpennessService.export_data_type(device, data_type_name, data_type_path)
     except Exception as e:
         RPA_status = 'Error exporting data type while in controller: ', e
         print(RPA_status)
