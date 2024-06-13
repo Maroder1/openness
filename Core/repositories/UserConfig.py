@@ -20,8 +20,8 @@ def saveDll(Tia_Version, dll_Path):
         
         
 def getDllPath(Tia_Version):
+    
     try:
-
         cursor = Connection.getCursor()
         cursor.execute('SELECT path FROM Dll_Path WHERE Tia_Version = ?', (Tia_Version,))
         result = cursor.fetchone()
@@ -29,9 +29,6 @@ def getDllPath(Tia_Version):
         return result
     except sqlite3.Error as e:
         print("An error occurred while executing the SQL query:", e)
-        return None
-    except Exception as e:
-        print("An unexpected error occurred:", e)
         return None
         
 

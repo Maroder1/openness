@@ -2,13 +2,18 @@ import os
 import csv
 import sqlite3
 
+current_path = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(current_path, "Openness.db")
+
 def create_db():
     
-    current_path = os.path.dirname(os.path.abspath(__file__))
     core_path = os.path.dirname(current_path)
     ddl_path = os.path.join(core_path, "Database", "ddl.sql")
     plc_List_path = os.path.join(core_path, "Database", "mlfb", "PLC_List.csv")
-    db_path = os.path.join(current_path, "Openness.db")
+    
+    print("")
+    print("Db path: ", db_path)
+    print("DDL path: ", ddl_path)
     
     if not os.path.exists(db_path):
         conexao = sqlite3.connect(db_path)
@@ -33,8 +38,6 @@ def create_db():
 
 
 def validate_db():
-    current_path = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(current_path, "Openness.db")
     
     if not os.path.exists(db_path):
         create_db()

@@ -7,8 +7,6 @@ from repositories import UserConfig
 import re
 
 
-
-
 def add_DLL(tia_Version):
     try:
         tuple = UserConfig.getDllPath(tia_Version)
