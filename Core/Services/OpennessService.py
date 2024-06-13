@@ -22,8 +22,6 @@ def add_DLL(tia_Version):
         import Siemens.Engineering as tia # type: ignore
         import Siemens.Engineering.HW.Features as hwf # type: ignore
         import Siemens.Engineering.Compiler as comp # type: ignore
-
-        print('DLL reference added successfully!')
         return True
 
     except Exception as e:

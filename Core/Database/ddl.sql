@@ -11,6 +11,3 @@ CREATE TABLE
         description VARCHAR(500)
     );
 
-SELECT * FROM Dll_Path;
-
-INSERT INTO Dll_Path (Tia_Version, Path) VALUES (17, 'C:\\Program Files\\Siemens\\Automation\\Portal V17\\PublicAPI\\V.17\\Siemens.Engineering.dll')
