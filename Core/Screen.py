@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 import pywinauto
 
 from repositories import UserConfig, MlfbManagement
-from Controller.OpennessController import open_project, export_Block, export_data_type
+from Controller.OpennessController import open_project, export_data_type, export_block
 from Services.OpennessService import add_DLL
 import os
 import Controller.OpennessController as OpennessController
@@ -29,6 +29,7 @@ project_name_var=tk.StringVar()
 quant_rb_import=tk.IntVar()
 quant_gp_import=tk.IntVar()
 dt_to_export = tk.StringVar()
+bk_to_export = tk.StringVar()
 
 ############### FUNCTIONS ################
 def CreateProject():
@@ -221,9 +222,13 @@ def main_screen():
         openBtn = tk.Button(proj_config_frame, text="Abrir projeto", command=opn_project)
         openBtn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
         
+        # Button para importar bloco
+        exportBkBtn = tk.Button(proj_config_frame, text="Import blocos", command=import_blocks_screen)
+        exportBkBtn.grid(row=4, column=0, padx=5, pady=5)
+        
         # Button para exportar bloco
-        exportBkBtn = tk.Button(proj_config_frame, text="Import Blocks", command=import_blocks_screen)
-        exportBkBtn.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
+        exportBkBtn = tk.Button(proj_config_frame, text="Exprtar blocos", command=exportar_blocks_screen)
+        exportBkBtn.grid(row=4, column=1, padx=5, pady=5)
 
         # Button para exportar udt
         exportDtBtn = tk.Button(proj_config_frame, text="Export Data Type", command=export_data_type_screen)
@@ -327,7 +332,9 @@ def call_export_dt():
     dt_name = dt_to_export.get()
     export_data_type(None, dt_name, open_directory_dialog())
 
-   
+def call_export_bk():
+    bk_name = bk_to_export.get()
+    export_block(None, bk_name, open_directory_dialog())  
 
 
 def import_blocks_screen():
@@ -355,6 +362,28 @@ def import_blocks_screen():
     # Botão para salvar configurações e fechar a janela
     save_btn = tk.Button(import_config_frame, text="Salvar Configurações", command=lambda: save_config(entrada1rb, entrada2gp, import_config_frame))
     save_btn.pack(pady=20)
+    
+
+def exportar_blocks_screen():
+    data_type_config_screen = tk.Toplevel(root)
+    data_type_config_screen.title("Exprtar blocos")
+    data_type_config_screen.geometry("540x360")
+    
+    data_type_config_screen.transient(root)
+    data_type_config_screen.grab_set()
+    
+    frame_dt = tk.Frame(data_type_config_screen)
+    frame_dt.pack(pady=10)
+    
+    InstructionBlocks = tk.Label(frame_dt, text="Nome do bloco que deseja exportar?")
+    InstructionBlocks.grid(row=0, column=0, padx=5, pady=5,)
+    
+    nome_dt = tk.Entry(frame_dt, textvariable=bk_to_export)
+    nome_dt.grid(row=0, column=1, padx=5, pady=5)
+    
+    export_dt = tk.Button(frame_dt, text="Exportar", command=call_export_bk)
+    export_dt.grid(row=1, column=1, columnspan=2 ,padx=5, pady=5)
+    
 
 def add_elements_to_frame(frame):
     global entrada1rb, entrada2gp

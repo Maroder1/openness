@@ -1,3 +1,4 @@
 *.pyc
-core/__pycache__/*
-core/build/*
+Core/__pycache__/*
+Core/build/*
+Core/config_blocos.txt

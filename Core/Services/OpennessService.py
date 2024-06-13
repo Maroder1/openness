@@ -90,6 +90,11 @@ def get_all_devices(myproject):
     except Exception as e:
         print('Error getting all devices:', e)
         
+def get_device_by_index(myproject, index):
+    cpu_list = get_all_devices(myproject)
+    cpu = cpu_list[index]
+    return cpu 
+         
 def configurePath(path):
     return path.replace("/", "\\")
 
@@ -188,6 +193,7 @@ def get_software(parent):
             if not plc_software:
                 raise Exception("No PLC software found for device.")
             return software_container.Software
+        
     except Exception as e:
         RPA_status = 'Error getting software container: ', e
         print(RPA_status)
@@ -267,24 +273,33 @@ def SetSubnetName(myproject):
     print(RPA_status)
     return myproject.Subnets.Create("System:Subnet.Ethernet", "NewSubnet")    
     
-def export_Fb(PlcSoftware):
+def export_block(device, block_name : str, block_path : str):
+    global RPA_status
+    try:
+        RPA_status = 'Exporting block'
+        print(RPA_status)
+        
+        block_path = block_path + "\\" + block_name + ".xml"
+        block_path = get_file_info(block_path)
+        
+        plc_software = get_software(device)
+        myblock = plc_software.BlockGroup.Blocks.Find(block_name)
     
-    Block = PlcSoftware.BlockGroup.Blocks.Find("MyBlock")
-    
-    diretorio_atual = os.path.dirname(os.path.abspath(__file__))
-
-    # Define o caminho da pasta "exportados"
-    caminho_pasta = os.path.join(diretorio_atual, 'exportados')
-
-    # Define o caminho do arquivo dentro da pasta "exportados"
-    caminho_arquivo = os.path.join(caminho_pasta, 'nome_do_arquivo.txt')
-    
-    with open(caminho_arquivo, 'w') as arquivo:
-        # Escreve alguma coisa no arquivo
-        arquivo.write(Block.Name)
-
-
-#(TiaPortal.Projects[0].Devices[0].DeviceItems[1].GetService<SoftwareContainer>().Software as PlcSoftware).BlockGroup.Blocks
+        attempts = 0
+        while myblock.GetAttribute("IsConsistent") == False:
+            result = compilate_item(myblock) != "Success"
+            if result == "Success":
+                break
+            attempts += 1
+            if attempts > 3:
+                raise Exception("Error compiling data type")
+        
+        myblock.Export(block_path, tia.ExportOptions.WithDefaults)
+        
+    except Exception as e:
+        RPA_status = 'Error exporting block: ', e
+        print(RPA_status)
+        return
 
 # Função para alterar o nome e número no XML
 def editar_tags_xml(arquivo, novo_nome, novo_numero):
@@ -364,24 +379,33 @@ def import_data_type(cpu, data_type_path):
     except Exception as e:
         print('Error importing data type:', e)
     
-def export_data_type(cpu, data_type_name : str, data_type_path : str):
+def export_data_type(device, data_type_name : str, data_type_path : str):
     try:
-        types = get_types(cpu)
+        types = get_types(device)
         data_type_path = data_type_path + "\\" + data_type_name + ".xml"
         data_type_path = get_file_info(data_type_path)
         
         data_type = types.Find(str(data_type_name))
         
         if data_type is not None:
-            if data_type.GetAttribute("IsConsistent") == False:
-                if compilate_item(data_type) != "Success":
+            attempts = 0
+            while data_type.GetAttribute("IsConsistent") == False:
+                result = compilate_item(data_type) != "Success"
+                if result == "Success":
+                    break
+                attempts += 1
+                if attempts > 3:
                     raise Exception("Error compiling data type")
         
             data_type.Export(data_type_path, tia.ExportOptions.WithDefaults)
             RPA_status = 'Data type exported successfully!'
             print(RPA_status)
+            return True
+        
         else:
-            print("Data type not found")
+            RPA_status = 'Data type not found'
+            print(RPA_status)
+            return False
             
     except Exception as e:
         print('Error exporting data type while in service:', e)
