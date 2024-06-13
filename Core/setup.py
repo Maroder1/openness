@@ -6,8 +6,8 @@ build_exe_options = {
     "packages": ["pywinauto", "tkinter", "sqlite3"],
     "include_files": [
         # Assets
+        os.path.join("Assets", "favico.ico"),
         "logo.png",
-        "favico.ico",
         
         # Controller
         os.path.join("Controller", "OpennessController.py"),
@@ -37,7 +37,7 @@ if sys.platform == "win32":
 target = Executable(
     script="Screen.py",
     base=base,
-    icon="./favico.ico",
+    icon="./Assets/favico.ico",
     target_name="RPA_Tia_Openness.exe"
     )
 

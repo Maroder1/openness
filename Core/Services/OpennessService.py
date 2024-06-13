@@ -7,8 +7,6 @@ from repositories import UserConfig
 import re
 
 
-
-
 def add_DLL(tia_Version):
     try:
         tuple = UserConfig.getDllPath(tia_Version)
@@ -24,8 +22,6 @@ def add_DLL(tia_Version):
         import Siemens.Engineering as tia # type: ignore
         import Siemens.Engineering.HW.Features as hwf # type: ignore
         import Siemens.Engineering.Compiler as comp # type: ignore
-
-        print('DLL reference added successfully!')
         return True
 
     except Exception as e:
@@ -37,11 +33,14 @@ def open_tia_ui():
     return tia.TiaPortal(tia.TiaPortalMode.WithUserInterface)
 
 def create_project(tia_instance, project_dir, project_name):
-    proj_dir_info = get_directory_info(project_dir+"\\"+project_name)
-    if not proj_dir_info.Exists:
-        return tia_instance.Projects.Create(project_dir, project_name)
-    else:
-        return "Project already exists"
+    try:
+        proj_dir_info = get_directory_info(project_dir+"\\"+project_name)
+        if not proj_dir_info.Exists:
+            return tia_instance.Projects.Create(proj_dir_info, project_name)
+        else:
+            return "Project already exists"
+    except Exception as e:
+        print('Error creating project: ', e)
 
 def compilate_item(to_compile):
     try:

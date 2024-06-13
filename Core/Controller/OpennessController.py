@@ -8,8 +8,6 @@ hardwareList = []
 myproject = None
 
 def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blocks_value):
-
-    project_dir = OpennessService.get_directory_info(project_path)
     
     try:
         
@@ -24,32 +22,11 @@ def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blo
         print(RPA_status)
         
         global myproject
-        myproject = OpennessService.create_project(mytia, project_dir, project_name)
+        myproject = OpennessService.create_project(mytia, project_path, project_name)
 
-        deviceName = ''
-        deviceMlfb = ''
-        for device in hardware:
-            deviceName = device["Name"]
-            deviceMlfb = device["Mlfb"]
-            deviceType = device["HardwareType"]
-            
-            hardwareList.append(OpennessService.addHardware(deviceType, deviceName, deviceMlfb, myproject))
-            
-        myproject.Save()
-            
-        
-        mysubnet = OpennessService.SetSubnetName(myproject)
-        
-        ProfinetInterfaces = OpennessService.GetAllProfinetInterfaces(myproject)
-        print("N de interfaces PROFINET: ", len(ProfinetInterfaces))
-        
-        for port in ProfinetInterfaces:
-            node = port.Nodes[0]
-            OpennessService.ConnectToSubnet(node, mysubnet)
-            
-        RPA_status = "Rede PROFINET configurada com sucesso!"
-        
-        myproject.Save()
+        if hardware != None and myproject != None:
+            addHardware(hardware)
+            wire_profinet()
 
         if rb_blocks_value > 0 : 
             for device in hardware:
@@ -74,6 +51,39 @@ def create_project(project_path, project_name, hardware, rb_blocks_value, gp_blo
         RPA_status = f'Error: {e}'
         print(RPA_status)
         return
+    
+ 
+def addHardware(hardware):
+    deviceName = ''
+    deviceMlfb = ''
+    for device in hardware:
+        deviceName = device["Name"]
+        deviceMlfb = device["Mlfb"]
+        deviceType = device["HardwareType"]
+        
+        hardwareList.append(OpennessService.addHardware(deviceType, deviceName, deviceMlfb, myproject))
+    myproject.Save()
+    
+    
+def wire_profinet():
+    ProfinetInterfaces = OpennessService.GetAllProfinetInterfaces(myproject)
+    print("N de interfaces PROFINET: ", len(ProfinetInterfaces))
+    
+    if len(ProfinetInterfaces) > 1:
+        mysubnet = OpennessService.SetSubnetName(myproject)
+        for port in ProfinetInterfaces:
+            node = port.Nodes[0]
+            OpennessService.ConnectToSubnet(node, mysubnet)
+            
+        myproject.Save()
+            
+        RPA_status = "Rede PROFINET configurada com sucesso!"
+        print(RPA_status)
+        
+    else:
+        RPA_status = "Número de interfaces PROFINET menor que 2"
+        print(RPA_status)
+
     
 def open_project(project_path):
     RPA_status = 'Opening project'

@@ -1,24 +1,27 @@
 import sys
 sys.coinit_flags = 2
-import pywinauto
 import os
+import pywinauto
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 from PIL import Image, ImageTk
 import pywinauto
 
-from repositories import UserConfig
-from repositories import MlfbManagement
+from repositories import UserConfig, MlfbManagement
 from Controller.OpennessController import open_project, export_Block, export_data_type
 from Services.OpennessService import add_DLL
+import os
 import Controller.OpennessController as OpennessController
 
-
+favico_path = "./Assets/favico.ico"
+if not os.path.exists(favico_path):
+    favico_path = "favico.ico"
+    print("File exists")
 
 # Criando a janela principal
 root = tk.Tk()
 root.geometry("600x400")
-# root.iconbitmap("favico.ico")
+root.iconbitmap(favico_path)
 root.title("RPA Tia Openness")
 
 # Variavel no nome do projeto
@@ -244,18 +247,7 @@ def main_screen():
         root.mainloop()
 def set_version(version_select):
     global selected_version 
-    if version_select == 151:
-        selected_version = 151
-        print("151")
-    elif version_select == 16:
-        selected_version = 16
-        print("16")
-    elif version_select == 17:
-        selected_version = 17
-        print("17")
-    else:
-        print("Versão não reconhecida.")
-        return None
+    selected_version = version_select
     
     if add_DLL(selected_version):
         print(f"Versão {selected_version} configurada com sucesso.")
