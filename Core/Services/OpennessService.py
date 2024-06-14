@@ -272,6 +272,48 @@ def SetSubnetName(myproject):
     RPA_status = 'Setting subnet name'
     print(RPA_status)
     return myproject.Subnets.Create("System:Subnet.Ethernet", "NewSubnet")  
+
+
+def import_data_type(cpu, data_type_path):
+    try:
+        types = get_types(cpu)
+        data_type_path = get_directory_info(data_type_path)
+        
+        types.Import(data_type_path, None, None)
+    except Exception as e:
+        print('Error importing data type:', e)
+   
+    
+def export_data_type(device, data_type_name : str, data_type_path : str):
+    try:
+        types = get_types(device)
+        data_type_path = data_type_path + "\\" + data_type_name + ".xml"
+        data_type_path = get_file_info(data_type_path)
+        
+        data_type = types.Find(str(data_type_name))
+        
+        if data_type is not None:
+            attempts = 0
+            while data_type.GetAttribute("IsConsistent") == False:
+                result = compilate_item(data_type) != "Success"
+                if result == "Success":
+                    break
+                attempts += 1
+                if attempts > 3:
+                    raise Exception("Error compiling data type")
+        
+            data_type.Export(data_type_path, tia.ExportOptions.WithDefaults)
+            RPA_status = 'Data type exported successfully!'
+            print(RPA_status)
+            return True
+        
+        else:
+            RPA_status = 'Data type not found'
+            print(RPA_status)
+            return False
+            
+    except Exception as e:
+        print('Error exporting data type while in service:', e)
   
 # Função para importar os blocos de código para o software PLC
 def import_block(device, file_path):
@@ -370,43 +412,3 @@ def get_types(cpu):
     plc_software = get_software(cpu)
     type_group = plc_software.TypeGroup
     return type_group.Types 
-
-def import_data_type(cpu, data_type_path):
-    try:
-        types = get_types(cpu)
-        data_type_path = get_directory_info(data_type_path)
-        
-        types.Import(data_type_path, None, None)
-    except Exception as e:
-        print('Error importing data type:', e)
-    
-def export_data_type(device, data_type_name : str, data_type_path : str):
-    try:
-        types = get_types(device)
-        data_type_path = data_type_path + "\\" + data_type_name + ".xml"
-        data_type_path = get_file_info(data_type_path)
-        
-        data_type = types.Find(str(data_type_name))
-        
-        if data_type is not None:
-            attempts = 0
-            while data_type.GetAttribute("IsConsistent") == False:
-                result = compilate_item(data_type) != "Success"
-                if result == "Success":
-                    break
-                attempts += 1
-                if attempts > 3:
-                    raise Exception("Error compiling data type")
-        
-            data_type.Export(data_type_path, tia.ExportOptions.WithDefaults)
-            RPA_status = 'Data type exported successfully!'
-            print(RPA_status)
-            return True
-        
-        else:
-            RPA_status = 'Data type not found'
-            print(RPA_status)
-            return False
-            
-    except Exception as e:
-        print('Error exporting data type while in service:', e)
