@@ -1,4 +1,4 @@
-import os
+import signal
 import clr
 from System.IO import DirectoryInfo, FileInfo  # type: ignore
 clr.AddReference('System.Collections')
@@ -271,7 +271,35 @@ def ConnectToSubnet(node, subnet):
 def SetSubnetName(myproject):
     RPA_status = 'Setting subnet name'
     print(RPA_status)
-    return myproject.Subnets.Create("System:Subnet.Ethernet", "NewSubnet")  
+    return myproject.Subnets.Create("System:Subnet.Ethernet", "NewSubnet")
+
+
+def recursive_search(groups, group_name):
+    
+    try:
+        found = groups.Find(group_name)
+        if found:
+            return found
+        
+        for group in groups.GetEnumerator():
+            found = recursive_search(group.Groups, group_name)
+            if found:
+                return found
+    except Exception as e:
+        print('Error searching group:', e)
+
+
+def create_group(device, group_name, parent_group):
+    try:
+        plc_software = get_software(device)
+        groups = plc_software.BlockGroup.Groups
+        if not parent_group:
+            groups.Create(group_name)
+        else:
+            recursive_search(groups, parent_group).Groups.Create(group_name)
+            
+    except Exception as e:
+        print('Error creating group:', e)
 
 
 def import_data_type(cpu, data_type_path):

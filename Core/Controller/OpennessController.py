@@ -94,6 +94,8 @@ def open_project(project_path):
     try:
         global myproject
         myproject = OpennessService.open_project(project_path)
+        # device = OpennessService.get_device_by_index(myproject, 0)
+        # OpennessService.create_group(device, 'E', 'G')
         RPA_status = 'Project opened successfully!'
         print(RPA_status)
         
