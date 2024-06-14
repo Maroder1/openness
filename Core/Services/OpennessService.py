@@ -271,7 +271,20 @@ def ConnectToSubnet(node, subnet):
 def SetSubnetName(myproject):
     RPA_status = 'Setting subnet name'
     print(RPA_status)
-    return myproject.Subnets.Create("System:Subnet.Ethernet", "NewSubnet")    
+    return myproject.Subnets.Create("System:Subnet.Ethernet", "NewSubnet")  
+  
+# Função para importar os blocos de código para o software PLC
+def import_block(device, file_path):
+    try:
+        print(f"Importing block to CPU: {device}")
+        import_options = tia.ImportOptions.Override
+        graphic_file_info = get_file_info(file_path)
+        plc_software = get_software(device)
+        plc_software.BlockGroup.Blocks.Import(graphic_file_info, import_options)
+        return True
+    except Exception as e:
+        print('Error importing block:', e)
+        return False
     
 def export_block(device, block_name : str, block_path : str):
     global RPA_status
@@ -279,8 +292,7 @@ def export_block(device, block_name : str, block_path : str):
         RPA_status = 'Exporting block'
         print(RPA_status)
         
-        block_path = block_path + "\\" + block_name + ".xml"
-        block_path = get_file_info(block_path)
+        block_path = get_file_info(block_path + "\\" + block_name + ".xml")
         
         plc_software = get_software(device)
         myblock = plc_software.BlockGroup.Blocks.Find(block_name)
@@ -322,9 +334,6 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0, tipo='' 
             print(f"Device {device_name} not found in the project.")
             return
 
-        # Acessar o serviço SoftwareContainer do item do dispositivo
-        plc_software = get_software(device)
-
         # Extrair nome e número base do XML
         if tipo == 'robo':
             nome_base = "0070_robo"
@@ -337,16 +346,8 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0, tipo='' 
             print("Failed to extract base name or number from XML.")
             return
 
-        # Função para importar os blocos de código para o software PLC
-        def import_blocks():
-            print(f"Importing block to CPU: {device_name}")
-            import_options = tia.ImportOptions.Override
-            graphic_file_info = FileInfo(file_path)
-            blocos = plc_software.BlockGroup.Blocks.Import(graphic_file_info, import_options)
-            print(blocos)
-
         # Executar a primeira importação
-        import_blocks()
+        import_block(device, file_path)
 
         # Executar importações adicionais conforme necessário
         for i in range(repetitions):
@@ -360,7 +361,7 @@ def verify_and_import(myproject, device_name, file_path, repetitions=0, tipo='' 
             editar_tags_xml(file_path, novo_nome, novo_numero)
 
             # Realizar a importação após modificar o XML
-            import_blocks()
+            import_block(device, file_path)
 
     except Exception as e:
         print('Error verifying or importing file:', e)
