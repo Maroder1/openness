@@ -5,7 +5,6 @@ import pywinauto
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 from PIL import Image, ImageTk
-import pywinauto
 
 from repositories import UserConfig, MlfbManagement
 from Controller.OpennessController import open_project, export_data_type, export_block
